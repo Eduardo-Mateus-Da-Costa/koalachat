@@ -1,0 +1,11 @@
+{
+  "name": "workchat",
+  "version": "1.0.0",
+  "description": "Chat para empresas",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Eduardo Mateus Da Costa, Denis Felipe Grezele, César Augusto Schuck Klunk",
+  "license": "ISC"
+}
