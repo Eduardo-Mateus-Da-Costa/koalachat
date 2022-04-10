@@ -1,7 +1,6 @@
 <template>
   <v-app>
       <v-app-bar
-        id="app-bar"
         absolute
         fixed
         color="green lighten-1"
