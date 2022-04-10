@@ -1,60 +1,87 @@
 <template>
   <v-app>
-    <v-app-bar
-      app
-      color="primary"
-      dark
-    >
-      <div class="d-flex align-center">
-        <v-img
-          alt="Vuetify Logo"
-          class="shrink mr-2"
-          contain
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-          transition="scale-transition"
-          width="40"
-        />
-
-        <v-img
-          alt="Vuetify Name"
-          class="shrink mt-1 hidden-sm-and-down"
-          contain
-          min-width="100"
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-          width="100"
-        />
-      </div>
-
-      <v-spacer></v-spacer>
-
-      <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-        text
-      >
-        <span class="mr-2">Latest Release</span>
-        <v-icon>mdi-open-in-new</v-icon>
-      </v-btn>
-    </v-app-bar>
-
+      <v-app-bar
+        absolute
+        color="green lighten-1"
+        src="./assets/coala.jpg"
+        >
+        <h1>KoalaChat</h1>
+      </v-app-bar>
+    <v-spacer/>
     <v-main>
-      <TesteSocket/>
+      <div align="center" justify="center">
+        <v-btn
+          elevation="3"
+          outlined
+          rounded
+          color="green"
+          @click=openJoinServer()>
+            {{button1}}
+        </v-btn>
+        <v-btn
+          class="ml-2"
+          elevation="3"
+          outlined
+          rounded
+          color="green"
+          @click=openCreateServer()>
+            {{button2}}
+        </v-btn>
+      </div>
     </v-main>
+     <v-footer
+        v-bind="localAttrs"
+        :padless="padless"
+      >
+        <v-card
+          flat
+          tile
+          width="100%"
+          class="green lighten-1 text-center"
+        >
+          <v-card-text>
+            <v-btn
+              v-for="icon in icons"
+              :key="icon"
+              class="mx-4"
+            >
+            Botão
+            </v-btn>
+          </v-card-text>
+  
+          <v-divider></v-divider>
+  
+          <v-card-text class="white--text">
+            {{ new Date().getFullYear() }} — <strong>KoalaChat</strong>
+          </v-card-text>
+        </v-card>
+      </v-footer>
   </v-app>
 </template>
 
 <script>
-import TesteSocket from './components/TesteSocket'
-
 export default {
   name: 'App',
 
   components: {
-    TesteSocket
+    
   },
 
   data: () => ({
-    //
+    button1: "Entrar em uma sala",
+    button2: "Criar meu servidor",
   }),
+
+  methods: {
+      openCreateServer() {
+        
+      },
+
+      openJoinServer() {
+
+      }
+
+    
+    }
 };
 </script>
