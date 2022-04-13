@@ -2,8 +2,6 @@
 node_modules
 /dist
 
-# por enquanto
-/src/websocket 
 
 
 # local env files
