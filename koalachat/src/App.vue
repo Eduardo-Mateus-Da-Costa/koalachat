@@ -1,14 +1,24 @@
 <template>
   <v-app>
-      <v-app-bar
-        class="imagem justify-center d-flex"
-        absolute
-        fixed
-        height="200"
+      <v-subheader
+        id="app-bar"
+        class="imagem d-flex"
+        height="10%"
         color="green lighten-1"
         >
-         <h1 id="top">KoalaChat</h1>
-      </v-app-bar>
+        <h1 id="top">KoalaChat</h1>
+        <v-spacer/>
+         <v-btn
+            id="Sair"
+            elevation="3"
+            outilined
+            rouded
+            color="red"
+            @click=fechar()
+            >
+          Sair
+        </v-btn>
+      </v-subheader>
     <div id="app">
       <router-view/>
     </div>
@@ -35,6 +45,25 @@
   </v-app>
 </template>
 
+<script>
+
+export default {
+  name: 'App',
+  components: {
+
+  },
+  data: () => ({
+
+  }),
+  methods: {
+    fechar() {
+      console.log("Fechei");
+    }
+  }
+}
+</script>
+
+
 <style lang="scss">
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
@@ -43,12 +72,13 @@
   text-align: center;
   color: #2c3e50;
   position: relative;
-  top: 50%
+  top: 40%
 }
 
 #footer {
   position: relative;
-  top: 86.5%
+  bottom: 0;
+  top: 72%;
 }
 
 #top {
