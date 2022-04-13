@@ -1,10 +1,11 @@
 <template>
   <v-app>
       <v-app-bar
+        class="imagem justify-center d-flex"
         absolute
         fixed
+        height="200"
         color="green lighten-1"
-        src="@/assets/coala.jpg"
         >
          <h1 id="top">KoalaChat</h1>
       </v-app-bar>
@@ -48,5 +49,13 @@
 #footer {
   position: relative;
   top: 86.5%
+}
+
+#top {
+  color: whITE;
+}
+.imagem{
+  background: url("./assets/coala.jpg") no-repeat center center;
+  background-size: cover;
 }
 </style>

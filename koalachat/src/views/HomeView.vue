@@ -25,6 +25,8 @@
 
 <script>
 import JoinServer from "@/components/JoinServer.vue";
+const app = require('@/websocket/app.js');
+const appWs = require('@/websocket/app-ws.js');
 
 export default {
   name: 'HomeView',
@@ -37,7 +39,11 @@ export default {
   }),
   methods: {
       openCreateServer() {
-        
+        const server = app.listen(process.env.PORT || 3000, () => {
+          console.log(`App Express is running!`);
+          })
+          
+        appWs(server);
       },
       openJoinServer() {
         this.$refs.joinServer.open();
