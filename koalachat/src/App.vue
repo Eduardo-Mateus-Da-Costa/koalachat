@@ -4,7 +4,7 @@
         id="app-bar"
         class="imagem d-flex"
         height="10%"
-        color="green lighten-1"
+        color=green
         >
         <h1 id="top">KoalaChat</h1>
         <v-spacer/>
@@ -83,10 +83,11 @@ export default {
 }
 
 #top {
-  color: rgb(255, 255, 255);
+  color: rgb(18, 0, 180);
 }
 .imagem{
-  background: url("./assets/coala.jpg") no-repeat center center;
+  background: url("@/assets/coala.jpg") no-repeat center center;
   background-size: cover;
+  color: blue;
 }
 </style>
