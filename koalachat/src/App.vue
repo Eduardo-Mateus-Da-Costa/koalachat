@@ -58,6 +58,7 @@ export default {
   methods: {
     fechar() {
       console.log("Fechei");
+      window.api.send("proBack", { funcao: "fechar"});
     }
   }
 }
