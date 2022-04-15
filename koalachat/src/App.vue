@@ -79,15 +79,19 @@ export default {
 #footer {
   position: relative;
   bottom: 0;
-  top: 80%;
+  top: 78%;
 }
 
 #top {
   color: rgb(18, 0, 180);
 }
 .imagem{
-  background: url("./assets/coala.jpg") no-repeat center center;
+  //background: url("https://edu.glogster.com/proxy?url=https%3A%2F%2Fi.ytimg.com%2Fvi%2F-49EGhZxvFE%2F0.jpg") no-repeat center center;
+  background: url("@/assets/coala.jpg") no-repeat center 30%;
   background-size: cover;
-  background-color: blue;
+}
+
+#app-bar{
+  height: 10%;
 }
 </style>

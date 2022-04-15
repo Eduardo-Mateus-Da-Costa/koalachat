@@ -27,13 +27,12 @@ export default {
 
     methods: {
       fincudo() {
-        if (this.message == "Click")
-        {
-          this.message = "Clickou";
-        }
-        else{
-          this.message = "Click";
-        }
+        console.log("cliquei");
+        window.api.send("proBack", { funcao: "print"});
+        window.api.receive("doBack", (data) => {
+          console.log(data);
+          this.message = data;
+        });
       },
 
       open() {

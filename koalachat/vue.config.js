@@ -1,5 +1,4 @@
 const { defineConfig } = require('@vue/cli-service')
-const path = require("path");
 module.exports = defineConfig({
   transpileDependencies: [
     'vuetify'
@@ -13,6 +12,7 @@ module.exports = {
 };
 
 module.exports = {
+  publicPath: process.env.NODE_ENV === 'production' ? './' : '/',
   pluginOptions: {
     electronBuilder: {
        preload: 'src/preload.js'
