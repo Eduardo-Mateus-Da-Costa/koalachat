@@ -86,8 +86,8 @@ export default {
   color: rgb(18, 0, 180);
 }
 .imagem{
-  background: url("@/assets/coala.jpg") no-repeat center center;
+  background: url("./assets/coala.jpg") no-repeat center center;
   background-size: cover;
-  color: blue;
+  background-color: blue;
 }
 </style>

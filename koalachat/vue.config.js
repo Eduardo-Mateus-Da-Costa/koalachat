@@ -12,3 +12,11 @@ module.exports = {
   }
 };
 
+module.exports = {
+  pluginOptions: {
+    electronBuilder: {
+       preload: 'src/preload.js'
+    },
+  }
+}
+
