@@ -40,25 +40,25 @@
             </v-card-text>
           </v-card>
         </v-footer>
+        <ExitConfirmation ref="exitConfirmation"/>
   </v-app>
 </template>
 
 <script>
 
-//const { ipcRenderer } = require('electron').remote
+import ExitConfirmation from '@/components/ExitConfirmation.vue'
 
 export default {
   name: 'App',
   components: {
-
+    ExitConfirmation
   },
   data: () => ({
 
   }),
   methods: {
     fechar() {
-      console.log("Fechei");
-      window.api.send("proBack", { funcao: "fechar"});
+      this.$refs.exitConfirmation.open();
     }
   }
 }

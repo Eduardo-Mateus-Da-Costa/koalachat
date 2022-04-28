@@ -7,7 +7,7 @@ module.exports = defineConfig({
 
 module.exports = {
   chainWebpack: config => {
-    config.externals({ path: 'path', fs: 'fs' });
+    config.externals({ path: 'path', fs: 'fs', ip: 'ip' });
   }
 };
 

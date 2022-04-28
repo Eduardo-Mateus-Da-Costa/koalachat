@@ -6,6 +6,7 @@ import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 import path from 'path'
 import Print from '../public/testedeimport.js'
+import ip from 'ip'
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -44,7 +45,7 @@ async function createWindow() {
     // Load the index.html when not in development
     win.loadURL('app://./index.html')
   }
-  win.setMenu(null);
+  //win.setMenu(null);
   win.maximize();
   win.show();
 }
@@ -101,6 +102,7 @@ ipcMain.on("proBack", (event, args) => {
     }
   else if (args.funcao === "print")
     {
+      console.log(ip.address());
       console.log("recebi");
       var print = new Print();
       win.webContents.send("doBack", print.getNome());

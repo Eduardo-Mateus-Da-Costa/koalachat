@@ -20,16 +20,19 @@
         </v-btn>
       </div>
       <JoinServer ref="joinServer"/>
+      <CreateServer ref="createServer"/>
     </v-main>
 </template>
 
 <script>
 import JoinServer from "@/components/JoinServer.vue";
+import CreateServer from "@/components/CreateServer.vue";
 
 export default {
   name: 'HomeView',
   components: {
-    JoinServer
+    JoinServer,
+    CreateServer
   },
   data: () => ({
     button1: "Entrar em uma sala",
@@ -37,11 +40,11 @@ export default {
   }),
   methods: {
       openCreateServer() {
-
+        this.$refs.createServer.open();
+      },
       },
       openJoinServer() {
         this.$refs.joinServer.open();
       }
-    }
-};
+}
 </script>
