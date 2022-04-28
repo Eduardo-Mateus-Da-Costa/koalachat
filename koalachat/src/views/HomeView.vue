@@ -42,9 +42,9 @@ export default {
       openCreateServer() {
         this.$refs.createServer.open();
       },
-      },
       openJoinServer() {
         this.$refs.joinServer.open();
       }
+  }
 }
 </script>
