@@ -15,6 +15,21 @@ module.exports = {
   publicPath: process.env.NODE_ENV === 'production' ? './' : '/',
   pluginOptions: {
     electronBuilder: {
+      build: {
+        icon: "src/assets/favicon.ico",
+        appId: "br.edu.unoesc.koalachat",   
+        linux: {
+          target: [
+            "AppImage",
+            "deb"
+          ]
+        },
+        publish: [
+          {
+            provider: "github"
+          }
+        ]
+      },
        preload: 'src/preload.js'
     },
   }
