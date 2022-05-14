@@ -15,6 +15,7 @@ module.exports = {
   publicPath: process.env.NODE_ENV === 'production' ? './' : '/',
   pluginOptions: {
     electronBuilder: {
+      customFileProtocol: './',
       build: {
         icon: "src/assets/favicon.ico",
         appId: "br.edu.unoesc.koalachat",   
