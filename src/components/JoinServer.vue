@@ -60,10 +60,24 @@ export default {
         this.dialog = true;
       },
 
+      getDefault() {
+        window.api.send("proBack", {funcao: "config"});
+        window.api.receive("doBack", (data) => {
+          this.name = data.user_name;
+          this.roomIp = data.last_conected_room.room_ip + ":" + data.last_conected_room.room_port;
+          this.roomName = data.last_conected_room.room_name;
+          this.roomPassword = data.last_conected_room.room_password;
+        });
+      },
+
       closeDialog() {
         this.dialog = false;
       },
-    }
+    },
+
+    mounted() {
+      this.getDefault();
+    },
 };
 </script>
 

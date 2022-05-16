@@ -7,6 +7,7 @@ const isDevelopment = process.env.NODE_ENV !== 'production'
 import path from 'path'
 import Print from '../public/testedeimport.js'
 import ip from 'ip'
+var config = require('../public/config.json');
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -106,6 +107,10 @@ ipcMain.on("proBack", (event, args) => {
       console.log("recebi");
       var print = new Print();
       win.webContents.send("doBack", print.getNome());
+    }
+  else if (args.funcao === "config")
+    {
+      win.webContents.send("doBack", config);
     }
 });
 

@@ -16,14 +16,33 @@ module.exports = {
   pluginOptions: {
     electronBuilder: {
       customFileProtocol: './',
-      build: {
-        icon: "src/assets/favicon.ico",
+      builderOptions: {
+        productName: 'Koalachat',
         appId: "br.edu.unoesc.koalachat",   
         linux: {
           target: [
             "AppImage",
             "deb"
-          ]
+          ],
+          icon: "./src/assets/koala.png"
+        },
+        win: {
+          target: [
+            "nsis",
+            "portable"
+          ],
+          icon: "./src/assets/koala.png"
+        },
+        mac: {
+          target: [
+            "dmg",
+            "zip"
+          ],
+          icon: "./src/assets/koala.png"
+        },
+        "nsis": {
+          "oneClick": false,
+          "allowToChangeInstallationDirectory": true,
         },
         publish: [
           {
@@ -31,7 +50,7 @@ module.exports = {
           }
         ]
       },
-       preload: 'src/preload.js'
+      preload: 'src/preload.js'
     },
   }
 }
