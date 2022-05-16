@@ -38,7 +38,7 @@ module.exports = {
             "dmg",
             "zip"
           ],
-          icon: "./src/assets/koala.png"
+          icon: "./src/assets/koala_mac.png"
         },
         "nsis": {
           "oneClick": false,
