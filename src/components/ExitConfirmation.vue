@@ -9,22 +9,25 @@
       class="text-h5 justify-center"> 
       Deseja realmente sair? 
       </v-card-title>
-      <v-btn 
-      class="ml-2"
-      color="green"
-      @click="closeDialog()"
-      rounded
-      >
-        Não
-      </v-btn>
-      <v-btn 
-      class="ml-2"
-      color="red"
-      @click="close()"
-      rounded
-      >
-        Sim
-      </v-btn>
+      <div class="d-flex">
+        <v-btn 
+        class="ml-2"
+        color="green"
+        @click="closeDialog()"
+        rounded
+        >
+          Não
+        </v-btn>
+        <v-spacer/>
+        <v-btn 
+        class="ml-2"
+        color="red"
+        @click="close()"
+        rounded
+        >
+          Sim
+        </v-btn>
+      </div>
     </v-card-text>
   </v-dialog>
 </template>

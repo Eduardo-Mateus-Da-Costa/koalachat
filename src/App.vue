@@ -19,15 +19,15 @@
           Sair
         </v-btn>
       </v-subheader>
-    <div id="app">
-      <router-view/>
+    <div
+      id="appView">
+      <router-view style="height: 100%;"/>
     </div>
     <v-footer
           id="footer"
+          class="pa-0"
         >
           <v-card
-            flat
-            tile
             width="100%"
             class="green lighten-1 text-center"
           >
@@ -66,32 +66,26 @@ export default {
 
 
 <style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  position: relative;
-  top: 40%
+
+#appView{
+  margin-top: 0px;
+  width: 100%;
+  height: 100%;
+  margin-bottom: 78px;
 }
 
 #footer {
-  position: relative;
-  bottom: 0;
-  top: 78%;
+  position: fixed;
+  top: 100%; 
+  width: 100%;
+  margin-top: -78px;
 }
 
 #top {
   color: rgb(18, 0, 180);
 }
 .imagem{
-  //background: url("https://edu.glogster.com/proxy?url=https%3A%2F%2Fi.ytimg.com%2Fvi%2F-49EGhZxvFE%2F0.jpg") no-repeat center center;
   background: url("@/assets/coala.jpg") no-repeat center 30%;
   background-size: cover;
-}
-
-#app-bar{
-  height: 10%;
 }
 </style>

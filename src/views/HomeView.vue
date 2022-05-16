@@ -18,6 +18,17 @@
           @click=openCreateServer()>
             {{button2}}
         </v-btn>
+        <v-btn
+          class="ml-2"
+          elevation="3"
+          outlined
+          rounded
+          color="green"
+          :to="{
+            name: 'chat',
+          }">
+            Ir para o chat
+        </v-btn>
       </div>
       <JoinServer ref="joinServer"/>
       <CreateServer ref="createServer"/>
