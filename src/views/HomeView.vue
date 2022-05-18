@@ -1,6 +1,6 @@
 <template>
     <v-main>
-      <div align="center" justify="center">
+      <div  class="d-flex justify-center" style="margin-top: 20%;">
         <v-btn
           elevation="3"
           outlined

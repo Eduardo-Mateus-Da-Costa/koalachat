@@ -5,7 +5,7 @@
         class="imagem d-flex"
         height="10%"
         color=green
-        >
+        style="position: fixed; top: 0; left: 0; right: 0; z-index: 1;">
         <h1 id="top">KoalaChat</h1>
         <v-spacer/>
          <v-btn
@@ -68,7 +68,7 @@ export default {
 <style lang="scss">
 
 #appView{
-  margin-top: 0px;
+  margin-top: 3.5%;
   width: 100%;
   height: 100%;
   margin-bottom: 78px;

@@ -9,38 +9,45 @@
             "
             >
             <v-btn
-                icon="mdi-arrow-left"
-                class="white--text"
-                @click="openMenu()"
-                ></v-btn>
+                icon
+                rounded
+                style="position: fixed; top: 55px; left: 0.5%; z-index: 1;"
+                :to="{name: 'home'}"
+                ><v-icon color="white">mdi-arrow-left</v-icon></v-btn>
         </div>
         <div 
         style="min-width: 5%">
         </div>
-        <div style="min-width: 82%;">
+        <div style="min-width: 82%; margin-top: 30px; margin-bottom: 130px;">
             <div>
                 <v-card
                 class="rounded"
                 v-for="(message, i) in messages"
                 :key="i"
+                style="margin-bottom: 10px;"
                 :style="{
                     alignItems: message.user_name === user_name ? 'flex-end' : 'flex-start',
+                    width: '50%',
+                    marginLeft: message.user_name === user_name ? 'auto' : '0',
+                    marginRight: message.user_name === user_name ? '0' : 'auto',
                 }">
                     <v-card-text
-                    :style="{
-                        'background-color': message.user_name === user_name ? '#00ff00' : '#ff0000',
-                        }">
-                        {{message.text}}
+                        :style="{
+                            backgroundColor: message.user_name === user_name ? 'rgba(0,160,0,0.25)' : 'rgba(247,28,0,0.25)',
+                            }">
+                            {{message.text}}
                     </v-card-text>
+                    
                 </v-card>
-                <v-card>
-                    <v-card-text>
+                <v-card style="position: fixed; top:100%; width: 82%; margin-top: -190px;">
+                    <v-card-text class="pa-1 mb-0 pt-1">
                         <v-text-field
+                        class="pa-0 mb-0"
                         v-model="message"
                         label="Mensagem"
                         ></v-text-field>
                     </v-card-text>
-                    <v-card-actions>
+                    <v-card-actions class="pa-1">
                         <v-btn
                         color="green"
                         @click="sendMessage()">
@@ -51,7 +58,9 @@
             </div>
         </div>
         <div 
-            style="min-width: 5%">
+            style="
+            min-width: 5%;"
+            >
         </div>
         <div
         class="green lighten-1"
@@ -98,7 +107,26 @@ export default {
             text: "Olá, eu sou o KoalaChat, o chat de Koalas. Seja bem-vindo(a)!",
             user_name: "KoalaChat",
             message_date: "2020-01-01 00:00:00",
-        }
+        },{
+            text: "Olá, eu sou o KoalaChat, o chat de Koalas. Seja bem-vindo(a)!",
+            user_name: "KoalaChat",
+            message_date: "2020-01-01 00:00:00",
+        },
+        {
+            text: "Olá, eu sou o KoalaChat, o chat de Koalas. Seja bem-vindo(a)!",
+            user_name: "Eduardo",
+            message_date: "2020-01-01 00:00:00",
+        },
+        {
+            text: "Olá, eu sou o KoalaChat, o chat de Koalas. Seja bem-vindo(a)!",
+            user_name: "KoalaChat",
+            message_date: "2020-01-01 00:00:00",
+        },
+        {
+            text: "Olá, eu sou o KoalaChat, o chat de Koalas. Seja bem-vindo(a)!",
+            user_name: "Eduardo",
+            message_date: "2020-01-01 00:00:00",
+        },
     ],
   }),
   methods: {
