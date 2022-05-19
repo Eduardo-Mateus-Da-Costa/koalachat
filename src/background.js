@@ -33,7 +33,7 @@ function onError(err) {
 }
 function onMessage(ws, data) {
     console.log(`onMessage: ${data}`);
-    ws.send(`recebido!`);
+    ws.send(true);
 }
 function onConnection(ws) {
     ws.on('message', data => onMessage(ws, data));
@@ -43,6 +43,7 @@ function onConnection(ws) {
 const wss = new WebSocket.Server({server:wsServer});
 wss.on('connection', onConnection);
 
+var clientSockect;
 
 
 
@@ -149,6 +150,13 @@ ipcMain.on("proBack", (event, args) => {
   else if (args.funcao === "config")
     {
       win.webContents.send("doBack", config);
+    }
+    else if (args.funcao === "sendMessage"){
+      clientSockect.send(args.message);
+    }
+    else if (args.funcao === "connectServer"){
+      clientSockect = new WebSocket(args.url);
+      clientSockect.on('connection', onConnection);
     }
 });
 
