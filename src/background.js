@@ -9,6 +9,44 @@ import Print from '../public/testedeimport.js'
 import ip from 'ip'
 var config = require('../public/config.json');
 
+
+const express = require('express');
+const cors = require('cors');
+import helmet from 'helmet';
+const morgan = require('morgan');
+const server = express();
+server.use(cors({ origin: '*' }));
+server.use(helmet());
+server.use(express.json());
+server.use(morgan('dev'));
+server.post('/login', (res) => {
+    res.json({ token: '123456' });
+});
+const wsServer = server.listen(3000, () => {
+  console.log(`App Express is running!`);
+})
+
+
+const WebSocket = require("ws");
+function onError(err) {
+    console.error(`onError: ${err.message}`);
+}
+function onMessage(ws, data) {
+    console.log(`onMessage: ${data}`);
+    ws.send(`recebido!`);
+}
+function onConnection(ws) {
+    ws.on('message', data => onMessage(ws, data));
+    ws.on('error', error => onError(ws, error));
+    console.log(`onConnection`);
+}
+const wss = new WebSocket.Server({server:wsServer});
+wss.on('connection', onConnection);
+
+
+
+
+
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true, stream: true } },
