@@ -68,7 +68,7 @@ export default {
 <style lang="scss">
 
 #appView{
-  margin-top: 3.5%;
+  margin-top: 48px;
   width: 100%;
   height: 100%;
   margin-bottom: 78px;

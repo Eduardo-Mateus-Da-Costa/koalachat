@@ -27,30 +27,52 @@
                 style="margin-bottom: 10px;"
                 :style="{
                     alignItems: message.user_name === user_name ? 'flex-end' : 'flex-start',
-                    width: '50%',
+                    width: 'max-content',
                     marginLeft: message.user_name === user_name ? 'auto' : '0',
                     marginRight: message.user_name === user_name ? '0' : 'auto',
                 }">
-                    <v-card-text
-                        :style="{
-                            backgroundColor: message.user_name === user_name ? 'rgba(0,160,0,0.25)' : 'rgba(247,28,0,0.25)',
-                            }">
-                            {{message.text}}
-                    </v-card-text>
+                <div
+                    style="min-width: 200px;"
+                    :style="{
+                        padding: '2px',
+                        backgroundColor: message.user_name === user_name ? 'rgba(0,160,0,0.25)' : 'rgba(247,28,0,0.25)',
+                        }">
+                    <h4 :style="{
+                        marginLeft: '2%',
+                        marginTop: '1%'}">
+                        {{message.user_name}}
+                    </h4>
+                    <p :style="{
+                        marginLeft: '2%',
+                        marginTop: '1%',
+                        marginBottom: 0}">
+                        {{message.text}}
+                    </p>
+                    <div class="d-flex justify-end mr-3 mb-1" style="margin-left: 2%; margin-top: 2px;">
+                        <h6 :style="{
+                    }">{{message.message_date}}</h6>
+                    </div>
+                </div>
+                    
                     
                 </v-card>
-                <v-card style="position: fixed; top:100%; width: 82%; margin-top: -190px;">
-                    <v-card-text class="pa-1 mb-0 pt-1">
+                <v-card style="position: fixed; top:100%; width: 82%; margin-top: -202px;">
+                    <v-card-text 
+                        class="pa-1 mb-0 pt-1 ml-2"
+                        >
                         <v-text-field
-                        class="pa-0 mb-0"
-                        v-model="message"
-                        label="Mensagem"
-                        ></v-text-field>
+                            style="margin-right: 15px;"
+                            class="mb-0"
+                            v-model="message"
+                            @keyup.enter="message != null ? sendMessage() : null"
+                            label="Mensagem"
+                        >
+                        </v-text-field>
                     </v-card-text>
-                    <v-card-actions class="pa-1">
+                    <v-card-actions class="pa-1 ml-2">
                         <v-btn
                         color="green"
-                        @click="sendMessage()">
+                        @click="message != null ? sendMessage() : null">
                             Enviar
                         </v-btn>
                     </v-card-actions>
@@ -80,7 +102,7 @@ export default {
   components: {
   },
   data: () => ({
-    message: '',
+    message: null,
     user_name: "Eduardo",
     messages: [
         {
@@ -132,10 +154,12 @@ export default {
   methods: {
       sendMessage() {
         var data = {
-        text: this.message,
-        user_name: this.user_name,
-        message_date: new Date().toISOString(),
+            text: this.message,
+            user_name: this.user_name,
+            message_date: new Date().toLocaleTimeString("pt-BR")+ " " + new Date().toLocaleDateString("pt-BR"),  
         }
+        // this.messages.push(data);
+        // this.message = null;
         window.api.send("proBack", {funcao: "sendMessage", data: data})
         window.api.receive("doBack", (data) => {
             if (data.error == true){
@@ -143,7 +167,7 @@ export default {
             }
             else{
             this.messages.push(data.message);
-            this.message = '';
+            this.message = null;
             }
         });
       },
