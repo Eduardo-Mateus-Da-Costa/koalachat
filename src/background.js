@@ -33,7 +33,7 @@ function onError(err) {
 }
 function onMessage(ws, data) {
     console.log(`onMessage: ${data}`);
-    ws.send(true);
+    ws.send("recebido");
     win.webContents.send("doBack", data);
 }
 function onConnection(ws) {
@@ -136,6 +136,25 @@ if (isDevelopment) {
   }
 };
 
+function enviar(url, text) {
+  if (clientSockect.readyState === WebSocket.OPEN) {
+    clientSockect.send(text);
+    console.log("enviado");
+  }
+  else{
+    conectar(url, text);
+    console.log("Não conectado");
+  }
+}
+
+function conectar(url, text) {
+  clientSockect = new WebSocket(url);
+  clientSockect.on('connection', onConnection);
+  clientSockect.on('message', data => onMessage(clientSockect, data));
+  console.log("conectando");
+  clientSockect.on("open", () => enviar(url, text));
+}
+
 ipcMain.on("proBack", (event, args) => {
   if (args.funcao === "fechar")
     {
@@ -153,11 +172,13 @@ ipcMain.on("proBack", (event, args) => {
       win.webContents.send("doBack", config);
     }
     else if (args.funcao === "sendMessage"){
-      if(clientSockect.isUndefined()){
-        clientSockect = new WebSocket(args.url);
-        clientSockect.on('connection', onConnection);
+      console.log(args.data.text);
+      if(typeof clientSockect === 'undefined'){
+        conectar(args.data.url, args.data.text);
       }
-      clientSockect.send(args.message);
+      else{
+        enviar(args.data.url, args.data.text);
+      }
     }
     else if (args.funcao === "connectServer"){
       clientSockect = new WebSocket(args.url);

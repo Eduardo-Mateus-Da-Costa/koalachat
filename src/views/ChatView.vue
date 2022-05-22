@@ -157,7 +157,7 @@ export default {
             text: this.message,
             user_name: this.user_name,
             message_date: new Date().toLocaleTimeString("pt-BR")+ " " + new Date().toLocaleDateString("pt-BR"),  
-            url: "ws://192.168.0.101:3000"
+            url: "ws://192.168.0.103:3000"
         }
         // this.messages.push(data);
         // this.message = null;
@@ -165,10 +165,12 @@ export default {
         window.api.receive("doBack", (data) => {
             if (data.error == true){
                 alert(data.errorMessage);
+                console.log(data);
             }
             else{
-                this.messages.push(data.message);
-                this.message = null;
+                // this.messages.push(data.message);
+                // this.message = null;
+                console.log(data);
             }
         });
       },
