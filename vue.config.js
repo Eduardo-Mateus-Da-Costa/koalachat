@@ -50,7 +50,7 @@ module.exports = {
           }
         ]
       },
-      preload: 'src/preload.js'
+      preload: './src/preload.js'
     },
   }
 }
