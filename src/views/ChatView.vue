@@ -157,17 +157,18 @@ export default {
             text: this.message,
             user_name: this.user_name,
             message_date: new Date().toLocaleTimeString("pt-BR")+ " " + new Date().toLocaleDateString("pt-BR"),  
+            url: "ws://192.168.0.101:3000"
         }
         // this.messages.push(data);
         // this.message = null;
         window.api.send("proBack", {funcao: "sendMessage", data: data})
         window.api.receive("doBack", (data) => {
             if (data.error == true){
-            alert(data.errorMessage);
+                alert(data.errorMessage);
             }
             else{
-            this.messages.push(data.message);
-            this.message = null;
+                this.messages.push(data.message);
+                this.message = null;
             }
         });
       },
