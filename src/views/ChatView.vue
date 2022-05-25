@@ -96,7 +96,7 @@
     </div>
 </template>
 <script>
-
+import Vue from 'vue'
 export default {
   name: 'ChatView',
   components: {
@@ -159,36 +159,29 @@ export default {
             message_date: new Date().toLocaleTimeString("pt-BR")+ " " + new Date().toLocaleDateString("pt-BR"),  
             url: "ws://192.168.0.103:3000"
         }
-        // this.messages.push(data);
-        // this.message = null;
         window.api.send("proBack", {funcao: "sendMessage", data: data})
-        window.api.receive("doBack", (data) => {
-            if (data.error == true){
-                alert(data.errorMessage);
-                console.log(data);
-            }
-            else{
-                // this.messages.push(data.message);
-                // this.message = null;
-                console.log(data);
-            }
-        });
       },
       getData() {
         var data = {
             user_name: this.user_name,
         }
         window.api.send("proBack", {funcao: "getMessages", data: data})
-        window.api.receive("doBack", (data) => {
-            if (data.error == true){
-            alert(data.errorMessage);
-            }
-            else{
-                this.messages = data.messages;
-            }
-        });
       },
+
+      setMessages(data) {
+        this.messages = data;
+      },
+
+      confirmSendMessage(data) {
+        this.messages.push(data);
+      }
     },
+
+    created(){
+        Vue.prototype.$setMessages = this.setMessages;
+        Vue.prototype.$confirmSendMessage = this.confirmSendMessage;
+    },
+
     mounted() {
         this.getData();
     },

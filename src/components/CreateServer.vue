@@ -47,30 +47,47 @@
 
 <script>
 export default {
-    name: 'CreateServer',
-    data: () => ({
-      message: "Click",
-      dialog: false,
-      name: "",
-      roomName: "",
-      roomPassword: "",
-      maxUsers: 50,
-      listMaxUsers: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50],
-    }),
+  name: 'CreateServer',
+  data: () => ({
+    message: "Click",
+    dialog: false,
+    name: "",
+    roomName: "",
+    roomPassword: "",
+    maxUsers: 50,
+    listMaxUsers: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50],
+    serverIp: null,
+    showData: false
+  }),
 
-    methods: {
-      open() {
-        this.dialog = true;
-      },
+  methods: {
+    open() {
+      this.dialog = true;
+    },
 
-      create(){
-          window.api.send("proBack", { funcao: "print"});
-      },
+    create(){
+      var data = {
+        name: this.name,
+        roomName: this.roomName,
+        roomPassword: this.roomPassword,
+        maxUsers: this.maxUsers,
+      }
+      window.api.send("proBack", { funcao: "createServer", data: data});
+    },
 
-      closeDialog() {
-        this.dialog = false;
-      },
-    }
+    closeDialog() {
+      this.dialog = false;
+    },
+
+    setServerConfig(data) {
+      this.serverIp = data.serverIp;
+      this.showData = true;
+    },
+  },
+
+  created() {
+    Vue.prototype.$setServerConfig = this.setServerConfig;
+  },
 };
 </script>
 

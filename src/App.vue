@@ -59,8 +59,41 @@ export default {
   methods: {
     fechar() {
       this.$refs.exitConfirmation.open();
+    },
+
+    getData(){
+      try{
+       window.api.receive("doBack", (data) => {
+         if (data.error == true){
+            alert(data.errorMessage);
+          }
+          else{
+            if (data.funcao == "config") {
+              this.$setConfig(data.config);
+            }
+            else if(data.funcao == "getMessages"){
+              this.$setMessages(data.messages);
+            }
+            else if (data.funcao == "serverConfig"){
+              this.$setServerConfig(data.serverConfig);
+            }
+            else if (funcao == "confirmSendMessage"){
+              this.$confirmSendMessage(data.message);
+            }
+            else{
+              console.log(data);
+            }
+          }
+        });
+      }catch(e){
+        console.log(e);
+      }
     }
-  }
+  },
+
+  mounted() {
+    this.getData();
+  },
 }
 </script>
 

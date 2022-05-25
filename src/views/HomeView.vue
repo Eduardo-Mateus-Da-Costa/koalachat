@@ -50,12 +50,12 @@ export default {
     button2: "Criar meu servidor",
   }),
   methods: {
-      openCreateServer() {
-        this.$refs.createServer.open();
-      },
-      openJoinServer() {
-        this.$refs.joinServer.open();
-      }
+    openCreateServer() {
+      this.$refs.createServer.open();
+    },
+    openJoinServer() {
+      this.$refs.joinServer.open();
+    }
   }
 }
 </script>

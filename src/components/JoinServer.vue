@@ -44,6 +44,7 @@
 </template>
 
 <script>
+import Vue from 'vue'
 export default {
     name: 'JoinServer',
     data: () => ({
@@ -62,17 +63,22 @@ export default {
 
       getDefault() {
         window.api.send("proBack", {funcao: "config"});
-        window.api.receive("doBack", (data) => {
-          this.name = data.user_name;
-          this.roomIp = data.last_conected_room.room_ip + ":" + data.last_conected_room.room_port;
-          this.roomName = data.last_conected_room.room_name;
-          this.roomPassword = data.last_conected_room.room_password;
-        });
+      },
+
+      setConfig(data) {
+        this.name = data.name;
+        this.roomIp = data.roomIp;
+        this.roomName = data.roomName;
+        this.roomPassword = data.roomPassword;
       },
 
       closeDialog() {
         this.dialog = false;
       },
+    },
+
+    created(){
+      Vue.prototype.$setConfig = this.setConfig;
     },
 
     mounted() {
