@@ -10,10 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: Klemensas/action-autotag@stable
-      with:
-        tag_prefix: "v"
-        tag_suffix: " (beta)"
     - uses: actions/setup-node@master
       with:
         node-version: 16
@@ -26,10 +22,6 @@ jobs:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: Klemensas/action-autotag@stable
-      with:
-        tag_prefix: "v"
-        tag_suffix: " (beta)"
     - uses: actions/setup-node@master
       with:
         node-version: 16
@@ -42,10 +34,6 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: Klemensas/action-autotag@stable
-      with:
-        tag_prefix: "v"
-        tag_suffix: " (beta)"
     - uses: actions/setup-node@master
       with:
         node-version: 16     
