@@ -23,30 +23,43 @@ server.post('/login', (res) => {
     res.json({ token: '123456' });
 });
 const wsServer = server.listen(3000, () => {
-  console.log(`App Express is running!`);
 })
 
+var serverData = {
+  rooms: [
+    {
+      name: "Sala 1",
+      id: "1",
+      port: "3000",
+      ip: "duducdi.com",
+      password: null,
+      masusers: 50,
+      users: [
+        {
+          name: "teste",
+          id: "1",
+        }
+      ],
+      status: true,
+      messages: [
+        {
+          text: "teste",
+          id: "1",
+          user: {
+            name: "teste",
+            id: "1",
+          },
+          message_date: "2020-01-01 00:00:00"
+        }
+      ]
+    },
+  ],
+};
+  
 
 const WebSocket = require("ws");
-function onError(err) {
-    console.error(`onError: ${err.message}`);
-}
-function onMessage(ws, data) {
-    console.log(`onMessage: ${data}`);
-    ws.send("recebido");
-    win.webContents.send("doBack", data);
-}
-function onConnection(ws) {
-    ws.on('message', data => onMessage(ws, data));
-    ws.on('error', error => onError(ws, error));
-    console.log(`onConnection`);
-}
-const wss = new WebSocket.Server({server:wsServer});
-wss.on('connection', onConnection);
 
 var clientSockect;
-
-
 
 
 // Scheme must be registered before the app is ready
@@ -136,23 +149,89 @@ if (isDevelopment) {
   }
 };
 
-function enviar(url, text) {
+
+function onError(ws, err) {
+  console.error(`onError: ${err.message}`);
+}
+
+function clientOnError(err) {
+  // win.webContents.send("doBack", { error: true });
+  // var data = {
+  //   funcao: funcao,
+  //   error: true
+  // }
+  // win.webContents.send("doBack", data);
+  console.log(err);
+}
+
+function clientOnMessage(ws, data) {
+  console.log(data);
+  var response = {
+    funcao: data.funcao,
+    error: data.error,
+  }
+  win.webContents.send("doBack", response);
+}
+
+function serverOnMessage(ws, data) {
+  ws.send("recebido");
+  serverData.rooms.forEach(room => {
+    try{
+      if (room.id == data.room_id) {
+        room.messages.push(data);
+        var response = {
+          funcao: "serverOnMessage",
+          error: false,
+        }
+        ws.send(JSON.stringify(response));
+      }
+    }catch(e){
+      var response = {
+        funcao: "serverOnMessage",
+        error: true,
+      }
+      ws.send(JSON.stringify(response));
+    }
+  });
+}
+
+function onServerConnection(ws) {
+  ws.on('message', data => serverOnMessage(ws, data));
+  ws.on('error', error => onError(ws, error));
+  console.log(`onConnection`);
+}
+
+function onClientConnection(ws) {
+  ws.on('message', data => clientOnMessage(ws, data));
+  ws.on('error', error => clientOnError(ws, error));
+  console.log(`onClientConnection`);
+}
+
+const wss = new WebSocket.Server({server:wsServer});
+wss.on('connection', onServerConnection);
+
+
+function enviar(url, data) {
   if (clientSockect.readyState === WebSocket.OPEN) {
-    clientSockect.send(text);
+    clientSockect.send(JSON.stringify(data));
     console.log("enviado");
   }
   else{
-    conectar(url, text);
+    conectar(url, data);
+    // colocar window.webContents.send("doBack", { error: true });
     console.log("Não conectado");
   }
 }
 
-function conectar(url, text) {
+function conectar(url, data) {
   clientSockect = new WebSocket(url);
-  clientSockect.on('connection', onConnection);
-  clientSockect.on('message', data => onMessage(clientSockect, data));
+  clientSockect.on('connection', onClientConnection);
   console.log("conectando");
-  clientSockect.on("open", () => enviar(url, text));
+  clientSockect.on("open", () => enviar(url, data));
+}
+
+function conectRoom(url, data) {
+  clientSockect.send(JSON.stringify(data));
 }
 
 ipcMain.on("proBack", (event, args) => {
@@ -174,15 +253,16 @@ ipcMain.on("proBack", (event, args) => {
     else if (args.funcao === "sendMessage"){
       console.log(args.data.text);
       if(typeof clientSockect === 'undefined'){
-        conectar(args.data.url, args.data.text);
+        conectar(args.data.url, args.data);
       }
       else{
-        enviar(args.data.url, args.data.text);
+        enviar(args.data.url, args.data);
       }
     }
     else if (args.funcao === "connectServer"){
       clientSockect = new WebSocket(args.url);
-      clientSockect.on('connection', onConnection);
+      clientSockect.on('connection', onClientConnection);
+      clientSockect.on("open", () => clientSockect.send(JSON.stringify(args.data)));
     }
 });
 

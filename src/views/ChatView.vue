@@ -102,6 +102,7 @@ export default {
   components: {
   },
   data: () => ({
+    room_id: 1,
     message: null,
     user_name: "Eduardo",
     messages: [
