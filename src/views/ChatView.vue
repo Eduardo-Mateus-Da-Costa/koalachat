@@ -155,10 +155,13 @@ export default {
   methods: {
       sendMessage() {
         var data = {
-            text: this.message,
+            message: {
+                text: this.message,
             user_name: this.user_name,
             message_date: new Date().toLocaleTimeString("pt-BR")+ " " + new Date().toLocaleDateString("pt-BR"),  
-            url: "ws://192.168.0.103:3000"
+            },
+            url: "ws://duducdi.com:3000",
+            funcao: "sendMessage"
         }
         window.api.send("proBack", {funcao: "sendMessage", data: data})
       },

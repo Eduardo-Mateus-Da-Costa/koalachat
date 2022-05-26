@@ -64,6 +64,7 @@ export default {
     getData(){
       try{
        window.api.receive("doBack", (data) => {
+         console.log(data);
          if (data.error == true){
             alert(data.errorMessage);
           }

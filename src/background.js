@@ -33,7 +33,7 @@ var serverData = {
       port: "3000",
       ip: "duducdi.com",
       password: null,
-      masusers: 50,
+      maxusers: 50,
       users: [
         {
           name: "teste",
@@ -165,16 +165,11 @@ function clientOnError(err) {
 }
 
 function clientOnMessage(ws, data) {
-  console.log(data);
-  var response = {
-    funcao: data.funcao,
-    error: data.error,
-  }
-  win.webContents.send("doBack", response);
+  win.webContents.send("doBack", JSON.parse(String.fromCharCode(...Buffer.from(data).toJSON().data)));
 }
 
 function serverOnMessage(ws, data) {
-  ws.send("recebido");
+  console.log(data.toString());
   serverData.rooms.forEach(room => {
     try{
       if (room.id == data.room_id) {
@@ -193,6 +188,7 @@ function serverOnMessage(ws, data) {
       ws.send(JSON.stringify(response));
     }
   });
+  ws.send(JSON.stringify(data.toString()));
 }
 
 function onServerConnection(ws) {
@@ -226,12 +222,9 @@ function enviar(url, data) {
 function conectar(url, data) {
   clientSockect = new WebSocket(url);
   clientSockect.on('connection', onClientConnection);
+  clientSockect.on('message', data => clientOnMessage(clientSockect, data));
   console.log("conectando");
   clientSockect.on("open", () => enviar(url, data));
-}
-
-function conectRoom(url, data) {
-  clientSockect.send(JSON.stringify(data));
 }
 
 ipcMain.on("proBack", (event, args) => {
