@@ -77,7 +77,7 @@ export default {
             else if (data.funcao == "serverConfig"){
               this.$setServerConfig(data.serverConfig);
             }
-            else if (funcao == "confirmSendMessage"){
+            else if (data.funcao == "confirmSendMessage"){
               this.$confirmSendMessage(data.message);
             }
             else{
