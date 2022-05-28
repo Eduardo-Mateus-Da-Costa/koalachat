@@ -26,6 +26,10 @@
           color="green"
           :to="{
             name: 'chat',
+            params:{
+              room: '1',
+              username: 'Teste',
+              url: 'ws://duducdi.com:3000'},
           }">
             Ir para o chat
         </v-btn>

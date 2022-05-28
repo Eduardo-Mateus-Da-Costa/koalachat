@@ -64,27 +64,31 @@ export default {
     getData(){
       try{
        window.api.receive("doBack", (data) => {
-         console.log(data);
-         if (data.error == true){
-            alert(data.errorMessage);
+        console.log(data);
+        if (data.error == true){
+          this.$isLoading(false);
+          alert(data.errorMessage);
+        }
+        else{
+          if (data.funcao == "config") {
+            this.$setConfig(data.config);
+          }
+          else if(data.funcao == "getMessages"){
+            this.$setMessages(data.messages);
+          }
+          else if (data.funcao == "serverConfig"){
+            this.$setServerConfig(data);
+          }
+          else if (data.funcao == "confirmSendMessage"){
+            this.$confirmSendMessage(data.message);
+          }
+          else if (data.funcao == "confirmJoin"){
+            this.$isLoged(data);
           }
           else{
-            if (data.funcao == "config") {
-              this.$setConfig(data.config);
-            }
-            else if(data.funcao == "getMessages"){
-              this.$setMessages(data.messages);
-            }
-            else if (data.funcao == "serverConfig"){
-              this.$setServerConfig(data.serverConfig);
-            }
-            else if (data.funcao == "confirmSendMessage"){
-              this.$confirmSendMessage(data.message);
-            }
-            else{
-              console.log(data);
-            }
+            console.log(data);
           }
+        }
         });
       }catch(e){
         console.log(e);

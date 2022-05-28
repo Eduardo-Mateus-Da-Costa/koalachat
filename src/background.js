@@ -5,7 +5,6 @@ import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 import path from 'path'
-import Print from '../public/testedeimport.js'
 import ip from 'ip'
 var config = require('../public/config.json');
 
@@ -25,39 +24,9 @@ server.post('/login', (res) => {
 const wsServer = server.listen(3000, () => {
 })
 
-var serverData = {
-  rooms: [
-    {
-      name: "Sala 1",
-      id: "1",
-      port: "3000",
-      ip: "duducdi.com",
-      password: null,
-      maxusers: 50,
-      users: [
-        {
-          name: "teste",
-          id: "1",
-        }
-      ],
-      status: true,
-      messages: [
-        {
-          text: "teste",
-          id: "1",
-          user: {
-            name: "teste",
-            id: "1",
-          },
-          message_date: "2020-01-01 00:00:00"
-        }
-      ]
-    },
-  ],
-};
-  
-
 const WebSocket = require("ws");
+const wss = new WebSocket.Server({server:wsServer});
+wss.on('connection', onServerConnection);
 
 var clientSockect;
 
@@ -150,113 +119,248 @@ if (isDevelopment) {
 };
 
 
+
+var serverData = {
+  name: "Sala 1",
+  port: "3000",
+  ip: "duducdi.com",
+  password: null,
+  maxusers: 50,
+  users: [
+    {
+      name: "teste",
+    }
+  ],
+  status: true,
+  messages: [
+    {
+      text: "teste",
+      user_name: "teste",
+      message_date: "2020-01-01 00:00:00"
+    }
+  ],
+};
+
+
 function onError(ws, err) {
   console.error(`onError: ${err.message}`);
+  var data ={
+    error: true,
+    errorMessage: err.message
+  }
+  ws.send(JSON.stringify(data));
 }
 
 function clientOnError(err) {
-  // win.webContents.send("doBack", { error: true });
-  // var data = {
-  //   funcao: funcao,
-  //   error: true
-  // }
-  // win.webContents.send("doBack", data);
+  var data = {
+    error: true,
+    errorMessage: err.message
+  }
+  win.webContents.send("doBack", data);
   console.log(err);
 }
 
-function clientOnMessage(ws, data) {
-  win.webContents.send("doBack", JSON.parse(String.fromCharCode(...Buffer.from(data).toJSON().data)));
+function decode(data) {
+  return JSON.parse(String.fromCharCode(...Buffer.from(data).toJSON().data));
 }
 
-function serverOnMessage(ws, data) {
-  console.log(data.toString());
-  serverData.rooms.forEach(room => {
-    try{
-      if (room.id == data.room_id) {
-        room.messages.push(data);
-        var response = {
-          funcao: "serverOnMessage",
-          error: false,
-        }
-        ws.send(JSON.stringify(response));
-      }
-    }catch(e){
-      var response = {
-        funcao: "serverOnMessage",
-        error: true,
-      }
-      ws.send(JSON.stringify(response));
+function clientOnMessage(ws, data) {
+  win.webContents.send("doBack", decode(data));
+}
+
+
+function findUser(user_name) {
+  var user = null;
+  try{
+    user = serverData.users.find(user => user.name == user_name);
+  }catch(e){
+    user = null;
+  }
+  return user;
+}
+
+
+function confirmJoin(data) {
+  var response = {
+    funcao: "confirmJoin",
+    error: true,
+    roomName: null,
+    name: null,
+    roomIp: null,
+    errorMessage: "Erro inesperado",
+  }
+  try{
+    if (serverData.name != data.roomName) {
+      throw new Error("Nome da sala não confere");
     }
-  });
-  ws.send(JSON.stringify(data.toString()));
+    if (serverData.password != data.password) {
+      throw new Error("Senha não confere");
+    }
+    if (serverData.users.length >= serverData.maxusers) {
+      throw new Error("Sala cheia");
+    }
+    serverData.users.forEach(user => {
+      if (user.name == data.name) {
+        throw new Error("Usuário já existe");
+      }
+    });
+    var newUser = {name : data.name};
+    serverData.users.push(newUser);
+    response.error = false;
+    response.errorMessage = "";
+    response.roomName = serverData.name;
+    response.name = data.name;
+    response.roomIp = serverData.ip + ":" + serverData.port;
+  }catch(e){
+    response.error = true;
+    response.errorMessage = e.message;
+  }
+  return response;
+}
+
+function confirmSendMessage(data){
+  var response = {
+    funcao: "confirmSendMessage",
+    error: true,
+    message: null,
+    errorMessage: "Erro inesperado",
+  }
+  try{
+    if (serverData.name != data.roomName) {
+      throw new Error("Nome da sala não confere");
+    }
+    if (findUser(data.name) == null){
+      throw new Error("Usuário não existe");
+    }
+    serverData.messages.push(data.message);
+    response.error = false;
+    response.message = data.message;
+    response.errorMessage = "";
+  }catch(e){
+    response.error = true;
+    response.errorMessage = e.message;
+  }
+  return response;
+}
+
+
+function getMessages(data){
+  var response = {
+    funcao: "getMessages",
+    error: true,
+    errorMessage: "Erro inesperado",
+    messages: []
+  }
+  try{
+    if (serverData.name != data.roomName) {
+      throw new Error("Nome da sala não confere");
+    }
+    if (findUser(data.name) == null){
+      throw new Error("Usuário não existe");
+    }
+    response.messages = serverData.messages;
+    response.error = false;
+    response.errorMessage = "";
+  }catch(e){
+    response.error = true;
+    response.errorMessage = e.message;
+  }
+  return response;
+}
+
+
+
+function serverOnMessage(ws, data) {
+  if (serverData.status != false){
+    var data = decode(data);
+    var response;
+    if (data.funcao == "join") {
+      response = confirmJoin(data);
+    }
+    if (data.funcao == "sendMessage") {
+      response = confirmSendMessage(data);
+    }
+    if (data.funcao == "getMessages") {
+      response = getMessages(data);
+    }
+    ws.send(JSON.stringify(response));
+  }
+  else{
+    var response = {
+      error: true,
+      errorMessage: "Servidor offline"
+    }
+    ws.send(JSON.stringify(response));
+  }
 }
 
 function onServerConnection(ws) {
   ws.on('message', data => serverOnMessage(ws, data));
   ws.on('error', error => onError(ws, error));
-  console.log(`onConnection`);
 }
 
-function onClientConnection(ws) {
-  ws.on('message', data => clientOnMessage(ws, data));
-  ws.on('error', error => clientOnError(ws, error));
-  console.log(`onClientConnection`);
-}
 
-const wss = new WebSocket.Server({server:wsServer});
-wss.on('connection', onServerConnection);
-
-
-function enviar(url, data) {
+function enviar(data) {
   if (clientSockect.readyState === WebSocket.OPEN) {
     clientSockect.send(JSON.stringify(data));
-    console.log("enviado");
   }
   else{
-    conectar(url, data);
-    // colocar window.webContents.send("doBack", { error: true });
-    console.log("Não conectado");
+    conectar(data);
   }
 }
 
-function conectar(url, data) {
-  clientSockect = new WebSocket(url);
-  clientSockect.on('connection', onClientConnection);
+function createServer(data) {
+  serverData.ip = ip.address("public", "ipv4");
+  serverData.name = data.roomName;
+  serverData.password = data.password;
+  serverData.maxusers = data.maxUsers;
+  serverData.status = true;
+  serverData.messages = [];
+  serverData.users = [];
+  win.webContents.send("doBack", {funcao: "serverConfig", error: false, errorMessage: "", serverIp: serverData.ip + ":" + serverData.port});
+}
+
+function conectar(data) {
+  clientSockect = new WebSocket(data.roomIp);
   clientSockect.on('message', data => clientOnMessage(clientSockect, data));
-  console.log("conectando");
-  clientSockect.on("open", () => enviar(url, data));
+  clientSockect.on('error', error => clientOnError(error));
+  clientSockect.on("open", () => enviar(data));
 }
 
 ipcMain.on("proBack", (event, args) => {
-  if (args.funcao === "fechar")
+  if (args.data.funcao === "fechar")
     {
       fechar();
     }
-  else if (args.funcao === "print")
+  else if (args.data.funcao === "config")
     {
-      console.log(ip.address());
-      console.log("recebi");
-      var print = new Print();
-      win.webContents.send("doBack", print.getNome());
-    }
-  else if (args.funcao === "config")
-    {
-      win.webContents.send("doBack", config);
-    }
-    else if (args.funcao === "sendMessage"){
-      console.log(args.data.text);
-      if(typeof clientSockect === 'undefined'){
-        conectar(args.data.url, args.data);
+      var response = {
+        funcao: "config",
+        error: false,
+        errorMessage: "",
+        config: null
+      };
+      try{
+        response.config = config;
       }
-      else{
-        enviar(args.data.url, args.data);
+      catch(e){
+        response.error = true;
+        response.errorMessage = "Erro ao ler configurações";
       }
+      win.webContents.send("doBack", response);
     }
-    else if (args.funcao === "connectServer"){
-      clientSockect = new WebSocket(args.url);
-      clientSockect.on('connection', onClientConnection);
-      clientSockect.on("open", () => clientSockect.send(JSON.stringify(args.data)));
-    }
+  else if (args.data.funcao === "join"){
+    conectar(args.data);
+  }
+  else if (args.data.funcao === "sendMessage"){
+    enviar(args.data);
+  }
+  else if (args.data.funcao === "getMessages"){
+    enviar(args.data);
+  }
+  else if (args.data.funcao === "createServer"){
+    createServer(args.data);
+  }
 });
 
 function fechar() {

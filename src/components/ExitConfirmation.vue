@@ -50,7 +50,7 @@ export default {
       },
 
       close() {
-        window.api.send("proBack", { funcao: "fechar"});
+        window.api.send("proBack", {data: {funcao: "fechar"}});
       },
     }
 };

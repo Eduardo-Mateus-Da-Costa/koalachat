@@ -62,7 +62,7 @@ export default {
       },
 
       getDefault() {
-        window.api.send("proBack", {funcao: "config"});
+        window.api.send("proBack", {data: {funcao: "config"}});
       },
 
       setConfig(data) {
@@ -75,10 +75,29 @@ export default {
       closeDialog() {
         this.dialog = false;
       },
+
+      join(){
+        var data = {
+          funcao: "join",
+          name: this.name,
+          roomIp: this.roomIp,
+          roomName: this.roomName,
+          roomPassword: this.roomPassword,
+        };
+        window.api.send("proBack", {data: data});
+        this.$isLoading(true);
+      },
+
+      isLoged(data){
+        console.log(data);
+        this.$isLoading(false);
+        this.$router.push({name: 'chat', params: {room: data.roomName, username: data.name, url: "ws://" + data.roomIp}});
+      },
     },
 
     created(){
       Vue.prototype.$setConfig = this.setConfig;
+      Vue.prototype.$isLoged = this.isLoged;
     },
 
     mounted() {

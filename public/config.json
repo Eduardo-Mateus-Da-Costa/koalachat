@@ -1,24 +1,6 @@
 {
-    "ip": null,
-    "server_port": "3000",
-    "user_name": "Eduardo",
-    "last_server_room": {
-        "room_name": null,
-        "max_users": 50,
-        "room_password": null
-    },
-    "last_conected_room": {
-        "room_name": "Teste",
-        "room_ip": "192.168.09.104",
-        "room_port": "3000",
-        "room_password": "Teste"
-    },
-    "server_rooms": [
-        {
-            "id": 1,
-            "room_name": "Teste",
-            "max_users": 50,
-            "room_password": null
-        }
-    ]
+   "name": "Eduardo",
+   "roomIp": "ws://duducdi.com:3003",
+   "roomName": "Sala 1",
+   "roomPassword": null
 }

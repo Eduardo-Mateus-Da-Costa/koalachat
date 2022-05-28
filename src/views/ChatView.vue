@@ -102,9 +102,10 @@ export default {
   components: {
   },
   data: () => ({
-    room_id: 1,
+    room: '',
     message: null,
     user_name: "Eduardo",
+    roomIp: "",
     messages: [
         {
             text: "Olá, eu sou o KoalaChat, o chat de Koalas. Seja bem-vindo(a)!",
@@ -155,21 +156,26 @@ export default {
   methods: {
       sendMessage() {
         var data = {
+            name: this.user_name,
+            url: this.roomIp,
+            roomName: this.room,
             message: {
                 text: this.message,
-            user_name: this.user_name,
-            message_date: new Date().toLocaleTimeString("pt-BR")+ " " + new Date().toLocaleDateString("pt-BR"),  
+                user_name: this.user_name,
+                message_date: new Date().toLocaleTimeString("pt-BR")+ " " + new Date().toLocaleDateString("pt-BR"),  
             },
-            url: "ws://duducdi.com:3000",
             funcao: "sendMessage"
         }
         window.api.send("proBack", {funcao: "sendMessage", data: data})
       },
-      getData() {
+      getMessages() {
         var data = {
-            user_name: this.user_name,
+            url: this.$route.params.url,
+            roomName: this.$route.params.room,
+            name: this.$route.params.username,
+            funcao: "getMessages"
         }
-        window.api.send("proBack", {funcao: "getMessages", data: data})
+        window.api.send("proBack", {data: data})
       },
 
       setMessages(data) {
@@ -187,7 +193,10 @@ export default {
     },
 
     mounted() {
-        this.getData();
+        this.getMessages();
+        this.roomIp = this.$route.params.url;
+        this.room = this.$route.params.room;
+        this.user_name = this.$route.params.username;
     },
 }
 </script>
