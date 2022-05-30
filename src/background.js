@@ -7,7 +7,7 @@ const isDevelopment = process.env.NODE_ENV !== 'production'
 import path from 'path'
 import ip from 'ip'
 var config = require('../public/config.json');
-
+var fs = require('fs');
 
 const express = require('express');
 const cors = require('cors');
@@ -121,24 +121,14 @@ if (isDevelopment) {
 
 
 var serverData = {
-  name: "Sala 1",
+  name: null,
   port: "3000",
-  ip: "duducdi.com",
+  ip: null,
   password: null,
-  maxusers: 50,
-  users: [
-    {
-      name: "teste",
-    }
-  ],
-  status: true,
-  messages: [
-    {
-      text: "teste",
-      user_name: "teste",
-      message_date: "2020-01-01 00:00:00"
-    }
-  ],
+  maxusers: null,
+  users: [],
+  status: false,
+  messages: [],
 };
 
 
@@ -161,9 +151,9 @@ function clientOnError(err) {
 }
 
 function decode(data) {
-  return JSON.parse(String.fromCharCode(...Buffer.from(data).toJSON().data));
+  var json = JSON.parse(new TextDecoder("utf-8").decode(data));
+  return json;
 }
-
 function clientOnMessage(ws, data) {
   win.webContents.send("doBack", decode(data));
 }
@@ -327,6 +317,44 @@ function conectar(data) {
   clientSockect.on("open", () => enviar(data));
 }
 
+
+function readConfig(){
+  try{
+    var data = fs.readFileSync(path.join(__dirname, "config.json"), "utf8");
+    data = JSON.parse(data);
+    return data;
+  }
+  catch(e){
+    try{
+      var data = fs.readFileSync("./public/config.json", "utf8");
+      data = JSON.parse(data);
+      return data;
+    }
+    catch(e){
+      throw new Error("Arquivo de configuração não encontrado");
+    }
+  };
+}
+
+function writeConfig(data){
+  var config = {
+    roomName: data.roomName,
+    roomPassword: data.roomPassword,
+    name: data.name,
+    roomIp: data.roomIp,
+  }
+  try{
+    fs.writeFileSync(path.join(__dirname, "config.json"), JSON.stringify(config));
+  }
+  catch(e){
+    try{
+      fs.writeFileSync("./public/config.json", JSON.stringify(config));
+    }catch(e){
+      throw new Error("Erro ao salvar arquivo de configuração");
+    }
+  };
+}
+
 ipcMain.on("proBack", (event, args) => {
   if (args.data.funcao === "fechar")
     {
@@ -341,15 +369,16 @@ ipcMain.on("proBack", (event, args) => {
         config: null
       };
       try{
-        response.config = config;
+        response.config = readConfig();
       }
       catch(e){
         response.error = true;
-        response.errorMessage = "Erro ao ler configurações";
+        response.errorMessage = __dirname;
       }
       win.webContents.send("doBack", response);
     }
   else if (args.data.funcao === "join"){
+    writeConfig(args.data);
     conectar(args.data);
   }
   else if (args.data.funcao === "sendMessage"){
