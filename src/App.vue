@@ -41,16 +41,19 @@
           </v-card>
         </v-footer>
         <ExitConfirmation ref="exitConfirmation"/>
+        <CaughtErrorVue ref="caughtErrorVue"/>
   </v-app>
 </template>
 
 <script>
 
-import ExitConfirmation from '@/components/ExitConfirmation.vue'
+import ExitConfirmation from '@/components/ExitConfirmation.vue';
+import CaughtErrorVue from './components/CaughtError.vue';
 
 export default {
   name: 'App',
   components: {
+    CaughtErrorVue,
     ExitConfirmation
   },
   data: () => ({
@@ -67,7 +70,7 @@ export default {
         console.log(data);
         if (data.error == true){
           this.$isLoading(false);
-          alert(data.errorMessage);
+          this.$refs.caughtErrorVue.showError(data.message);
         }
         else{
           if (data.funcao == "config") {
