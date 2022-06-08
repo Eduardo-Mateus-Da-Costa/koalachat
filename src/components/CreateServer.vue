@@ -9,17 +9,17 @@
     <form>
       <v-text-field
         v-model="name"
-        label="Seu nome"
+        label="Seu nome*"
         required
       ></v-text-field>
       <v-text-field
         v-model="owner_password"
-        label="Senha de administrador"
+        label="Senha de administrador*"
         required
       ></v-text-field>
       <v-text-field
         v-model="roomName"
-        label="Nome da sala"
+        label="Nome da sala*"
         required
       ></v-text-field>
       
@@ -31,12 +31,12 @@
         </v-select>
       <v-text-field
         v-model="roomPassword"
-        label="Senha da sala (se quiser)"
+        label="Senha da sala"
       ></v-text-field>
-
+      <div v-if="form" style="color:red; margin-bottom: 3px;">Preencha os campos obrigatórios *</div>
       <v-btn
         class="mr-4"
-        @click="create()"
+        @click="verifyForm() ? create() : null"
         color='green'
       >
         Entrar
@@ -87,12 +87,20 @@ export default {
     listMaxUsers: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50],
     serverIp: null,
     showServerConfig: false,
-    owner_password: null
+    owner_password: null,
+    form: false,
   }),
 
   methods: {
     open() {
       this.dialog = true;
+    },
+
+    verifyForm() {
+      if (this.name == "" || this.roomName == "" || this.owner_password == "") {
+        this.form = true;
+        return false;
+      }
     },
 
     create(){
@@ -120,6 +128,7 @@ export default {
           roomIp: "ws://" + this.serverIp,
           roomName: this.roomName,
           roomPassword: this.roomPassword,
+          owner_password: this.owner_password
         };
         window.api.send("proBack", {data: data});
         this.$isLoading(true);

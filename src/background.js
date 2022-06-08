@@ -318,7 +318,7 @@ function createServer(data) {
   serverData.status = true;
   serverData.messages = [];
   serverData.users = [{name: data.name}];
-  win.webContents.send("doBack", {funcao: "serverConfig", error: false, errorMessage: "", serverIp: serverData.ip + ":" + serverData.port});
+  win.webContents.send("doBack", {funcao: "serverConfig", error: false, errorMessage: "", serverIp: serverData.ip + ":" + serverData.port, owner_password: serverData.owner.password});
 }
 
 function conectar(data) {

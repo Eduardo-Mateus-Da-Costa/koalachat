@@ -8,7 +8,7 @@
     <form>
       <v-text-field
         v-model="name"
-        label="Seu nome"
+        label="Seu nome*"
         required
       ></v-text-field>
       <v-checkbox
@@ -18,27 +18,27 @@
       <v-text-field
         v-if="owner"
         v-model="owner_password"
-        label="Senha de administrador"
+        label="Senha de administrador*"
         required
       ></v-text-field>
       <v-text-field
         v-model="roomIp"
-        label="Endereço da sala (IP:Port)"
+        label="Endereço da sala (IP:Port)*"
         required
       ></v-text-field>
       <v-text-field
         v-model="roomName"
-        label="Nome da sala"
+        label="Nome da sala*"
         required
       ></v-text-field>
       <v-text-field
         v-model="roomPassword"
-        label="Senha da sala (se tiver)"
+        label="Senha da sala"
       ></v-text-field>
-
+      <div v-if="form" style="color:red; margin-bottom: 3px;">Preencha os campos obrigatórios *</div>
       <v-btn
         class="mr-4"
-        @click="join()"
+        @click="verifyForm() ? join() : null"
         color='green'
       >
         Entrar
@@ -65,10 +65,18 @@ export default {
       roomName: "",
       roomPassword: "",
       owner: false,
-      owner_password: "",
+      owner_password: null,
+      form: false,
     }),
 
     methods: {
+      verifyForm() {
+        if (this.name == "" || this.roomIp == "" || this.roomName == "") {
+          this.form = true
+          return false
+        }
+      },
+
       open() {
         this.dialog = true;
       },
