@@ -139,6 +139,7 @@ export default {
             funcao: "sendMessage"
         }
         window.api.send("proBack", {funcao: "sendMessage", data: data})
+        this.message = null;
       },
       getMessages() {
         var data = {
@@ -188,7 +189,6 @@ export default {
 
     beforeDestroy() {
         clearInterval(this.timer);
-        window.api.send("proBack", {data: {url: this.roomIp, roomName: this.room, name: this.user_name, funcao: "leaveRoom"}});
     }
 }
 </script>

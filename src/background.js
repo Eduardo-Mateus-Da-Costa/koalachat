@@ -6,7 +6,6 @@ import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 import path from 'path'
 import ip from 'ip'
-var config = require('../public/config.json');
 var fs = require('fs');
 
 const express = require('express');
@@ -198,6 +197,10 @@ function confirmJoin(data) {
       });
       var newUser = {name : data.name};
       serverData.users.push(newUser);
+    }else{
+      if(serverData.owner.password != data.owner_password){
+        throw new Error("Senha de administrador não confere!");
+      }
     }
     response.error = false;
     response.errorMessage = "";
@@ -311,10 +314,10 @@ function createServer(data) {
   serverData.name = data.roomName;
   serverData.password = data.password;
   serverData.maxusers = data.maxUsers;
-  serverData.owner = {name: data.name};
+  serverData.owner = {name: data.name, password: data.owner_password};
   serverData.status = true;
   serverData.messages = [];
-  serverData.users = [{name: data.name, id: 0}];
+  serverData.users = [{name: data.name}];
   win.webContents.send("doBack", {funcao: "serverConfig", error: false, errorMessage: "", serverIp: serverData.ip + ":" + serverData.port});
 }
 

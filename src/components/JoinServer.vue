@@ -11,6 +11,16 @@
         label="Seu nome"
         required
       ></v-text-field>
+      <v-checkbox
+        v-model="owner"
+        label="Sou o dono da sala"
+      ></v-checkbox>
+      <v-text-field
+        v-if="owner"
+        v-model="owner_password"
+        label="Senha de administrador"
+        required
+      ></v-text-field>
       <v-text-field
         v-model="roomIp"
         label="Endereço da sala (IP:Port)"
@@ -54,6 +64,8 @@ export default {
       roomIp: null,
       roomName: "",
       roomPassword: "",
+      owner: false,
+      owner_password: "",
     }),
 
     methods: {
@@ -83,6 +95,7 @@ export default {
           roomIp: this.roomIp,
           roomName: this.roomName,
           roomPassword: this.roomPassword,
+          owner_password: this.owner_password,
         };
         window.api.send("proBack", {data: data});
         this.$isLoading(true);
