@@ -21,6 +21,7 @@
         <div style="min-width: 82%; margin-top: 30px; margin-bottom: 130px;">
             <div>
                 <v-card
+                @contextmenu="owner == true ? openOptions(message) : null"
                 class="rounded"
                 v-for="(message, i) in messages"
                 :key="i"
@@ -53,9 +54,17 @@
                     }">{{message.message_date}}</h6>
                     </div>
                 </div>
-                    
-                    
                 </v-card>
+                    <div v-if="Loading" class="text-center">
+                        <v-progress-circular
+                        indeterminate
+                        color="primary"
+                        ></v-progress-circular>
+                        <div>Carregando mensagens</div>
+                    </div>
+                    <div v-if="error" class="text-center">
+                        <h3>Ocorreu um erro ao carregar as mensagens, por favor confira os dados e tente novamente!</h3>
+                    </div>
                 <v-card style="position: fixed; top:100%; width: 82%; margin-top: -202px;">
                     <v-card-text 
                         class="pa-1 mb-0 pt-1 ml-2"
@@ -102,58 +111,21 @@ export default {
   components: {
   },
   data: () => ({
+    Loading: true,
     room: '',
     message: null,
     user_name: "Eduardo",
     roomIp: "",
-    messages: [
-        {
-            text: "Olá, eu sou o KoalaChat, o chat de Koalas. Seja bem-vindo(a)!",
-            user_name: "KoalaChat",
-            message_date: "2020-01-01 00:00:00",
-        },
-        {
-            text: "Olá, eu sou o KoalaChat, o chat de Koalas. Seja bem-vindo(a)!",
-            user_name: "Eduardo",
-            message_date: "2020-01-01 00:00:00",
-        },
-        {
-            text: "Olá, eu sou o KoalaChat, o chat de Koalas. Seja bem-vindo(a)!",
-            user_name: "KoalaChat",
-            message_date: "2020-01-01 00:00:00",
-        },
-        {
-            text: "Olá, eu sou o KoalaChat, o chat de Koalas. Seja bem-vindo(a)!",
-            user_name: "Eduardo",
-            message_date: "2020-01-01 00:00:00",
-        },
-        {
-            text: "Olá, eu sou o KoalaChat, o chat de Koalas. Seja bem-vindo(a)!",
-            user_name: "KoalaChat",
-            message_date: "2020-01-01 00:00:00",
-        },{
-            text: "Olá, eu sou o KoalaChat, o chat de Koalas. Seja bem-vindo(a)!",
-            user_name: "KoalaChat",
-            message_date: "2020-01-01 00:00:00",
-        },
-        {
-            text: "Olá, eu sou o KoalaChat, o chat de Koalas. Seja bem-vindo(a)!",
-            user_name: "Eduardo",
-            message_date: "2020-01-01 00:00:00",
-        },
-        {
-            text: "Olá, eu sou o KoalaChat, o chat de Koalas. Seja bem-vindo(a)!",
-            user_name: "KoalaChat",
-            message_date: "2020-01-01 00:00:00",
-        },
-        {
-            text: "Olá, eu sou o KoalaChat, o chat de Koalas. Seja bem-vindo(a)!",
-            user_name: "Eduardo",
-            message_date: "2020-01-01 00:00:00",
-        },
-    ],
+    users_count: 0,
+    owner: false,
+    messages: [],
+    error: false,
   }),
   methods: {
+      openOptions(message) {
+        console.log(message.text);
+        this.$refs.options.open(message);
+      },
       sendMessage() {
         var data = {
             name: this.user_name,
@@ -179,24 +151,44 @@ export default {
       },
 
       setMessages(data) {
-        this.messages = data;
+        this.Loading = false;
+        this.messages = data.messages;
+        this.users_count = data.users_count;
+        this.owner = data.owner;
       },
+
 
       confirmSendMessage(data) {
         this.messages.push(data);
-      }
+      },
+
+        clearTimer() {
+            this.Loading = false;
+            this.error = true;
+            clearInterval(this.timer);
+        },
     },
 
     created(){
         Vue.prototype.$setMessages = this.setMessages;
         Vue.prototype.$confirmSendMessage = this.confirmSendMessage;
+        Vue.prototype.$clearTimer = this.clearTimer;
     },
 
     mounted() {
-        this.getMessages();
+        {
+            this.timer = setInterval(() => {
+                this.getMessages();
+            }, 300);
+        }
         this.roomIp = this.$route.params.url;
         this.room = this.$route.params.room;
         this.user_name = this.$route.params.username;
     },
+
+    beforeDestroy() {
+        clearInterval(this.timer);
+        window.api.send("proBack", {data: {url: this.roomIp, roomName: this.room, name: this.user_name, funcao: "leaveRoom"}});
+    }
 }
 </script>

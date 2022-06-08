@@ -70,14 +70,17 @@ export default {
         console.log(data);
         if (data.error == true){
           this.$isLoading(false);
-          this.$refs.caughtErrorVue.showError(data.message);
+          this.$refs.caughtErrorVue.showError(data);
+          if(data.funcao == "getMessages"){
+            this.$clearTimer();
+          }
         }
         else{
           if (data.funcao == "config") {
             this.$setConfig(data.config);
           }
           else if(data.funcao == "getMessages"){
-            this.$setMessages(data.messages);
+            this.$setMessages(data);
           }
           else if (data.funcao == "serverConfig"){
             this.$setServerConfig(data);

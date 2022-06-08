@@ -89,7 +89,6 @@ export default {
       },
 
       isLoged(data){
-        console.log(data);
         this.$isLoading(false);
         this.$router.push({name: 'chat', params: {room: data.roomName, username: data.name, url: "ws://" + data.roomIp}});
       },

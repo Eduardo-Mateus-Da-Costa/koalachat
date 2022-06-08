@@ -121,6 +121,7 @@ if (isDevelopment) {
 
 
 var serverData = {
+  owner: null,
   name: null,
   port: "3000",
   ip: null,
@@ -189,13 +190,15 @@ function confirmJoin(data) {
     if (serverData.users.length >= serverData.maxusers) {
       throw new Error("Sala cheia");
     }
-    serverData.users.forEach(user => {
-      if (user.name == data.name) {
-        throw new Error("Usuário já existe");
-      }
-    });
-    var newUser = {name : data.name};
-    serverData.users.push(newUser);
+    if (serverData.owner.name !== data.name) {
+      serverData.users.forEach(user => {
+        if (user.name == data.name) {
+          throw new Error("Usuário já existe");
+        }
+      });
+      var newUser = {name : data.name};
+      serverData.users.push(newUser);
+    }
     response.error = false;
     response.errorMessage = "";
     response.roomName = serverData.name;
@@ -239,7 +242,9 @@ function getMessages(data){
     funcao: "getMessages",
     error: true,
     errorMessage: "Erro inesperado",
-    messages: []
+    messages: [],
+    users_count: null,
+    owner: false,
   }
   try{
     if (serverData.name != data.roomName) {
@@ -251,6 +256,8 @@ function getMessages(data){
     response.messages = serverData.messages;
     response.error = false;
     response.errorMessage = "";
+    response.users_count = serverData.users.length;
+    response.owner = serverData.owner.name == data.name;
   }catch(e){
     response.error = true;
     response.errorMessage = e.message;
@@ -304,9 +311,10 @@ function createServer(data) {
   serverData.name = data.roomName;
   serverData.password = data.password;
   serverData.maxusers = data.maxUsers;
+  serverData.owner = {name: data.name};
   serverData.status = true;
   serverData.messages = [];
-  serverData.users = [];
+  serverData.users = [{name: data.name, id: 0}];
   win.webContents.send("doBack", {funcao: "serverConfig", error: false, errorMessage: "", serverIp: serverData.ip + ":" + serverData.port});
 }
 

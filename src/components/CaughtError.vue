@@ -27,7 +27,7 @@ export default {
         },
         showError(error) {
             if (error != null) {
-                this.Error = error;
+                this.Error = error.errorMessage;
                 this.dialog = true;
             }else {
                 this.Error = "Houve um erro inesperado";
