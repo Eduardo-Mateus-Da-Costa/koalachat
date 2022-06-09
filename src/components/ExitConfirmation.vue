@@ -6,8 +6,12 @@
   >
     <v-card-text> 
       <v-card-title 
-      class="text-h5 justify-center"> 
+      class="text-h4 justify-center"> 
       Deseja realmente sair? 
+      </v-card-title>
+      <v-card-title 
+      class="text-h9 justify-center"> 
+      Caso você possua uma sala aberta, ela será fechada.
       </v-card-title>
       <div class="d-flex">
         <v-btn 

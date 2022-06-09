@@ -8,6 +8,8 @@
         style="position: fixed; top: 0; left: 0; right: 0; z-index: 1;">
         <h1 id="top">KoalaChat</h1>
         <v-spacer/>
+        <h2 v-if="room_name != null" style="color:lightblue;">Sala: {{room_name}}</h2>
+        <v-spacer/>
          <v-btn
             id="Sair"
             elevation="3"
@@ -57,7 +59,7 @@ export default {
     ExitConfirmation
   },
   data: () => ({
-
+    room_name: null,
   }),
   methods: {
     fechar() {
@@ -67,7 +69,7 @@ export default {
     getData(){
       try{
        window.api.receive("doBack", (data) => {
-        console.log(data);
+        //console.log(data);
         if (data.error == true){
           this.$isLoading(false);
           this.$refs.caughtErrorVue.showError(data);
@@ -89,6 +91,7 @@ export default {
             this.$confirmSendMessage(data.message);
           }
           else if (data.funcao == "confirmJoin"){
+            this.setRoom_name(data);
             this.$isLoged(data);
           }
           else{
@@ -99,7 +102,11 @@ export default {
       }catch(e){
         console.log(e);
       }
-    }
+    },
+
+    setRoom_name(data){
+      this.room_name = data.roomName;
+    },
   },
 
   mounted() {

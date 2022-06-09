@@ -16,9 +16,9 @@
                 ><v-icon color="white">mdi-arrow-left</v-icon></v-btn>
         </div>
         <div 
-        style="min-width: 5%">
+            style="min-width: 5%">
         </div>
-        <div style="min-width: 82%; margin-top: 30px; margin-bottom: 130px;">
+        <div style="min-width: 82%; margin-top: 30px; margin-bottom: 130px;" id="chat" ref="chat">
             <div>
                 <v-card
                 @contextmenu="owner == true ? openOptions(message) : null"
@@ -168,6 +168,10 @@ export default {
             this.error = true;
             clearInterval(this.timer);
         },
+
+        scrollDown() {
+            window.scrollTo(0, document.body.scrollHeight);
+        },
     },
 
     created(){
@@ -189,6 +193,12 @@ export default {
 
     beforeDestroy() {
         clearInterval(this.timer);
+    },
+
+    watch:{
+        confirmSendMessage(){
+            this.scrollDown();
+        }
     }
 }
 </script>

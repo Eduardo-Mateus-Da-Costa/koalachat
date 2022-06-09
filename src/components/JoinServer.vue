@@ -74,6 +74,9 @@ export default {
         if (this.name == "" || this.roomIp == "" || this.roomName == "") {
           this.form = true
           return false
+        }else{
+          this.form = false
+          return true
         }
       },
 

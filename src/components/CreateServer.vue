@@ -101,6 +101,10 @@ export default {
         this.form = true;
         return false;
       }
+      else{
+        this.form = false;
+        return true;
+      }
     },
 
     create(){
