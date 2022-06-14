@@ -349,6 +349,35 @@ function getUsers(data){
     return response;
 }
 
+function banUser(data){
+    var response = {
+      funcao: "banUser",
+      error: true,
+      errorMessage: "Erro inesperado",
+    };
+    try{
+        if (serverData.name !== data.roomName) {
+            throw new Error("Nome da sala não confere");
+        }
+        if (findUser(data) == null){
+            throw new Error("Usuário não existe");
+        }
+        var theUser = findUser(data);
+        if (theUser.name === serverData.owner.name){
+            throw new Error("Não é possível banir o dono da sala");
+        }
+        var index = serverData.users.findIndex(user => user.name === theUser.name && user.password === theUser.password);
+        serverData.users.splice(index, 1);
+        response.error = false;
+        response.errorMessage = "";
+    }
+    catch(e){
+        response.error = true;
+        response.errorMessage = e.message;
+    }
+    return response;
+}
+
 
 
 function serverOnMessage(ws, data) {
@@ -369,6 +398,9 @@ function serverOnMessage(ws, data) {
     }
     if (data.funcao === "getUsers"){
         response = getUsers(data);
+    }
+    if (data.funcao === "banUser") {
+        response = banUser(data);
     }
     ws.send(JSON.stringify(response));
   }
@@ -498,6 +530,9 @@ ipcMain.on("proBack", (event, args) => {
     enviar(args.data);
   }
   else if (args.data.funcao === "getUsers") {
+    enviar(args.data);
+  }
+  else if (args.data.funcao === "banUser") {
     enviar(args.data);
   }
 });
