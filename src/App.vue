@@ -5,7 +5,7 @@
         class="imagem d-flex"
         height="10%"
         color=green
-        style="position: fixed; top: 0; left: 0; right: 0; z-index: 1;">
+        style="position: fixed; top: 0; left: 0; right: 0; z-index: 2;">
         <h1 id="top">KoalaChat</h1>
         <v-spacer/>
         <h2 v-if="room_name != null" style="color:lightblue;">Sala: {{room_name}}</h2>
@@ -88,9 +88,6 @@ export default {
           else if (data.funcao === "serverConfig"){
             this.$setServerConfig(data);
           }
-          else if (data.funcao === "confirmSendMessage"){
-            this.$confirmSendMessage(data.message);
-          }
           else if (data.funcao === "confirmJoin"){
             this.setRoom_name(data);
             this.$isLoged(data);
@@ -124,7 +121,7 @@ export default {
   watch: {
     room_name() {
       if (this.room_name == null) {
-        //window.location.reload(); ///Para tirar o nome da sala
+        window.location.reload(); ///Para tirar o nome da sala
       }
     }
   }
@@ -137,6 +134,7 @@ export default {
 #appView{
   margin-top: 48px;
   width: 100%;
+  height: 100%;
 }
 
 #footer {
@@ -144,6 +142,7 @@ export default {
   top: 100%;
   width: 100%;
   margin-top: -78px;
+  z-index: 2;
 }
 
 #top {

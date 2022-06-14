@@ -1,16 +1,19 @@
 <template>
     <div class="d-flex" style="background-color:ghostwhite; height: 100%" >
         <v-navigation-drawer
-            class="green lighten-1"
+            class="green lighten-1 elevation-0"
             expand-on-hover
             style="
                 min-width: 4%;
+                position: fixed;
+                z-index: 1;
+                top: 48px;
             "
             >
             <v-btn
                 icon
                 rounded
-                style="left: 15%; top: 1%;"
+                style="left: 15%; top: 10px; margin-bottom: 10px;"
                 :to="{name: 'home'}"
                 ><v-icon color="white">mdi-arrow-left</v-icon></v-btn>
             <v-list-item>
@@ -34,10 +37,10 @@
             </v-list-item>
         </v-navigation-drawer>
         <div 
-            style="min-width: 5%">
+            style="min-width: 9%">
         </div>
-        <div style="width: 82%; margin-top: 30px; margin-bottom: 130px;" id="chat" ref="chat">
-            <div style="overflow: auto; max-height: calc(100% - 400px)" >
+        <div style="width: 82%; margin-top: 30px; margin-bottom: 230px;" id="chat" ref="chat">
+            <div >
                 <v-card
                 class="rounded"
                 v-for="(message, i) in messages"
@@ -50,7 +53,7 @@
                     marginRight: message.user_name === user_name ? '0' : 'auto',
                 }">
                 <div
-                    style="min-width: 200px;"
+                    style="min-width: 400px;"
                     :style="{
                         padding: '2px',
                         backgroundColor: message.user_name === user_name ? 'rgba(0,160,0,0.25)' : 'rgba(247,28,0,0.25)',
@@ -83,7 +86,14 @@
                         <h3>Ocorreu um erro ao carregar as mensagens, por favor confira os dados e tente novamente!</h3>
                     </div>
             </div>
-          <div class="d-flex justify-center">
+          <div
+              class="d-flex justify-center flex-grow-1"
+              style="
+                position: fixed;
+                top: 100%;
+                margin-top: -220px;
+                width: 82%;
+                ">
             <v-card width="100%">
               <v-card-text
                   class="pa-1 mb-0 pt-1 ml-2"
@@ -124,17 +134,15 @@
 </template>
 <script>
 import Vue from 'vue'
-//import UsersList from "@/components/UsersList";
 export default {
   name: 'ChatView',
   components: {
-    //UsersList,
   },
   data: () => ({
     Loading: true,
     room: '',
     message: null,
-    user_name: "Eduardo",
+    user_name: "",
     roomIp: "",
     users_count: 0,
     owner: false,
@@ -201,10 +209,6 @@ export default {
       },
 
 
-      confirmSendMessage(data) {
-        this.messages.push(data);
-      },
-
         clearTimer() {
             this.Loading = false;
             this.error = true;
@@ -218,7 +222,6 @@ export default {
 
     created(){
         Vue.prototype.$setMessages = this.setMessages;
-        Vue.prototype.$confirmSendMessage = this.confirmSendMessage;
         Vue.prototype.$clearTimer = this.clearTimer;
         Vue.prototype.$setUsers = this.setUsers;
     },
