@@ -23,7 +23,7 @@
       </v-subheader>
     <div
       id="appView">
-      <router-view style="height: 100%;"/>
+      <router-view/>
     </div>
     <v-footer
           id="footer"
@@ -34,7 +34,7 @@
             class="green lighten-1 text-center"
           >
             <v-divider></v-divider>
-    
+
             <v-card-text class="white--text">
               {{ new Date().getFullYear() }} — <strong>KoalaChat</strong>
               <v-spacer/>
@@ -51,12 +51,13 @@
 
 import ExitConfirmation from '@/components/ExitConfirmation.vue';
 import CaughtErrorVue from './components/CaughtError.vue';
+import router from "@/router";
 
 export default {
   name: 'App',
   components: {
     CaughtErrorVue,
-    ExitConfirmation
+    ExitConfirmation,
   },
   data: () => ({
     room_name: null,
@@ -69,30 +70,37 @@ export default {
     getData(){
       try{
        window.api.receive("doBack", (data) => {
-        //console.log(data);
-        if (data.error == true){
+         //console.log(data);
+        if (data.error === true){
           this.$isLoading(false);
-          this.$refs.caughtErrorVue.showError(data);
-          if(data.funcao == "getMessages"){
+          this.$refs.caughtErrorVue.show(data);
+          if(data.funcao === "getMessages" || data.funcao === "getUsers"){
             this.$clearTimer();
           }
         }
         else{
-          if (data.funcao == "config") {
+          if (data.funcao === "config") {
             this.$setConfig(data.config);
           }
-          else if(data.funcao == "getMessages"){
+          else if(data.funcao === "getMessages"){
             this.$setMessages(data);
           }
-          else if (data.funcao == "serverConfig"){
+          else if (data.funcao === "serverConfig"){
             this.$setServerConfig(data);
           }
-          else if (data.funcao == "confirmSendMessage"){
+          else if (data.funcao === "confirmSendMessage"){
             this.$confirmSendMessage(data.message);
           }
-          else if (data.funcao == "confirmJoin"){
+          else if (data.funcao === "confirmJoin"){
             this.setRoom_name(data);
             this.$isLoged(data);
+          }
+          else if (data.funcao === "getUsers"){
+            this.$setUsers(data);
+          }
+          else if (data.funcao === "confirmLogout"){
+            this.setRoom_name({room_name: null});
+            router.push({name: 'home'});
           }
           else{
             console.log(data);
@@ -112,6 +120,14 @@ export default {
   mounted() {
     this.getData();
   },
+
+  watch: {
+    room_name() {
+      if (this.room_name == null) {
+        //window.location.reload(); ///Para tirar o nome da sala
+      }
+    }
+  }
 }
 </script>
 
@@ -121,13 +137,11 @@ export default {
 #appView{
   margin-top: 48px;
   width: 100%;
-  height: 100%;
-  margin-bottom: 78px;
 }
 
 #footer {
   position: fixed;
-  top: 100%; 
+  top: 100%;
   width: 100%;
   margin-top: -78px;
 }

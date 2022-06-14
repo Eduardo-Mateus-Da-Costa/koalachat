@@ -13,7 +13,7 @@
         required
       ></v-text-field>
       <v-text-field
-        v-model="owner_password"
+        v-model="user_password"
         label="Senha de administrador*"
         required
       ></v-text-field>
@@ -87,7 +87,7 @@ export default {
     listMaxUsers: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50],
     serverIp: null,
     showServerConfig: false,
-    owner_password: null,
+    user_password: null,
     form: false,
   }),
 
@@ -97,7 +97,7 @@ export default {
     },
 
     verifyForm() {
-      if (this.name == "" || this.roomName == "" || this.owner_password == "") {
+      if (this.name == "" || this.roomName == "" || this.user_password == "") {
         this.form = true;
         return false;
       }
@@ -114,7 +114,7 @@ export default {
         roomName: this.roomName,
         roomPassword: this.roomPassword,
         maxUsers: this.maxUsers,
-        owner_password: this.owner_password
+        user_password: this.user_password
       }
       window.api.send("proBack", {data: data});
       this.$isLoading(true);
@@ -127,13 +127,15 @@ export default {
     closeServerConfig() {
       this.showServerConfig = false;
       var data = {
-          funcao: "join",
-          name: this.name,
-          roomIp: "ws://" + this.serverIp,
-          roomName: this.roomName,
-          roomPassword: this.roomPassword,
-          owner_password: this.owner_password
-        };
+        funcao: "join",
+        name: this.name,
+        roomIp: "ws://" + this.serverIp,
+        roomName: this.roomName,
+        roomPassword: this.roomPassword,
+        user_password: this.user_password,
+        is_owner: true,
+        mode: "join"
+      };
         window.api.send("proBack", {data: data});
         this.$isLoading(true);
     },

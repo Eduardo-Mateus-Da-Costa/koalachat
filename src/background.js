@@ -115,7 +115,7 @@ if (isDevelopment) {
       app.quit()
     })
   }
-};
+}
 
 
 
@@ -159,10 +159,10 @@ function clientOnMessage(ws, data) {
 }
 
 
-function findUser(user_name) {
+function findUser(userData) {
   var user = null;
   try{
-    user = serverData.users.find(user => user.name == user_name);
+    user = serverData.users.find(user => user.name === userData.name);
   }catch(e){
     user = null;
   }
@@ -180,26 +180,50 @@ function confirmJoin(data) {
     errorMessage: "Erro inesperado",
   }
   try{
-    if (serverData.name != data.roomName) {
+    if (serverData.name !== data.roomName) {
       throw new Error("Nome da sala não confere");
     }
-    if (serverData.password != data.password) {
+    if (serverData.password !== data.password) {
       throw new Error("Senha não confere");
     }
-    if (serverData.users.length >= serverData.maxusers) {
+    if (serverData.users.length >= serverData.maxusers && data.mode !== "join") {
       throw new Error("Sala cheia");
     }
-    if (serverData.owner.name !== data.name) {
-      serverData.users.forEach(user => {
-        if (user.name == data.name) {
+    var index;
+    if (data.is_owner === true){
+      if (serverData.owner.online === true) {
+        throw new Error("Dono da sala já está online!");
+      }
+      else if(serverData.owner.password !== data.user_password){
+        throw new Error("Senha de administrador não confere!");
+      }
+      serverData.owner.online = true;
+      index = serverData.users.findIndex(user => user.name === data.name && user.password === data.user_password);
+      serverData.users[index].online = true;
+    }
+    else{
+      var theuser;
+      if (data.mode === "join") {
+        theuser = findUser(data);
+        if (theuser == null) {
+          throw new Error("Usuário não encontrado");
+        }
+        else if (theuser.online === true) {
+          throw new Error("Usuário já está online");
+        }
+        else if (theuser.password !== data.user_password) {
+          throw new Error("Senha não confere");
+        }
+        index = serverData.users.findIndex(user => user.name === theuser.name && user.password === theuser.password);
+        serverData.users[index].online = true;
+      }
+      else if (data.mode === "create") {
+        theuser = findUser(data);
+        if (theuser != null) {
           throw new Error("Usuário já existe");
         }
-      });
-      var newUser = {name : data.name};
-      serverData.users.push(newUser);
-    }else{
-      if(serverData.owner.password != data.owner_password){
-        throw new Error("Senha de administrador não confere!");
+        theuser = {name : data.name, password : data.user_password, online : true};
+        serverData.users.push(theuser);
       }
     }
     response.error = false;
@@ -222,10 +246,10 @@ function confirmSendMessage(data){
     errorMessage: "Erro inesperado",
   }
   try{
-    if (serverData.name != data.roomName) {
+    if (serverData.name !== data.roomName) {
       throw new Error("Nome da sala não confere");
     }
-    if (findUser(data.name) == null){
+    if (findUser(data) == null){
       throw new Error("Usuário não existe");
     }
     serverData.messages.push(data.message);
@@ -250,17 +274,17 @@ function getMessages(data){
     owner: false,
   }
   try{
-    if (serverData.name != data.roomName) {
+    if (serverData.name !== data.roomName) {
       throw new Error("Nome da sala não confere");
     }
-    if (findUser(data.name) == null){
+    if (findUser(data) == null){
       throw new Error("Usuário não existe");
     }
     response.messages = serverData.messages;
     response.error = false;
     response.errorMessage = "";
     response.users_count = serverData.users.length;
-    response.owner = serverData.owner.name == data.name;
+    response.owner = serverData.owner.name === data.name;
   }catch(e){
     response.error = true;
     response.errorMessage = e.message;
@@ -269,24 +293,87 @@ function getMessages(data){
 }
 
 
+function confirmLogout(data){
+    var response = {
+      funcao: "confirmLogout",
+      error: true,
+      errorMessage: "Erro inesperado",
+    }
+    try{
+        if (serverData.name !== data.roomName) {
+            throw new Error("Nome da sala não confere");
+        }
+        var theUser = findUser(data);
+        if (theUser == null){
+            throw new Error("Usuário não existe");
+        }
+        var index = serverData.users.findIndex(user => user.name === theUser.name && user.password === theUser.password);
+        serverData.users[index].online = false;
+        if (serverData.owner.name === data.name){
+            serverData.owner.online = false;
+        }
+        response.error = false;
+        response.errorMessage = "";
+    }catch(e){
+        response.error = true;
+        response.errorMessage = e.message;
+    }
+    return response;
+}
+
+
+function getUsers(data){
+    var response = {
+      funcao: "getUsers",
+      error: true,
+      errorMessage: "Erro inesperado",
+      users: [],
+      owner: false,
+    }
+    try{
+        if (serverData.name !== data.roomName) {
+            throw new Error("Nome da sala não confere");
+        }
+        if (findUser(data) == null){
+            throw new Error("Usuário não existe");
+        }
+        response.users = serverData.users;
+        response.error = false;
+        response.errorMessage = "";
+        response.owner = serverData.owner.name === data.name;
+    }
+    catch(e){
+        response.error = true;
+        response.errorMessage = e.message;
+    }
+    return response;
+}
+
+
 
 function serverOnMessage(ws, data) {
-  if (serverData.status != false){
-    var data = decode(data);
-    var response;
-    if (data.funcao == "join") {
+  var response;
+  if (serverData.status !== false){
+    data = decode(data);
+    if (data.funcao === "join") {
       response = confirmJoin(data);
     }
-    if (data.funcao == "sendMessage") {
+    if (data.funcao === "sendMessage") {
       response = confirmSendMessage(data);
     }
-    if (data.funcao == "getMessages") {
+    if (data.funcao === "getMessages") {
       response = getMessages(data);
+    }
+    if (data.funcao === "logout"){
+        response = confirmLogout(data);
+    }
+    if (data.funcao === "getUsers"){
+        response = getUsers(data);
     }
     ws.send(JSON.stringify(response));
   }
   else{
-    var response = {
+    response = {
       error: true,
       errorMessage: "Servidor offline"
     }
@@ -314,37 +401,43 @@ function createServer(data) {
   serverData.name = data.roomName;
   serverData.password = data.password;
   serverData.maxusers = data.maxUsers;
-  serverData.owner = {name: data.name, password: data.owner_password};
+  serverData.owner = {name: data.name, password: data.user_password, online: false};
   serverData.status = true;
   serverData.messages = [];
-  serverData.users = [{name: data.name}];
+  serverData.users = [serverData.owner];
   win.webContents.send("doBack", {funcao: "serverConfig", error: false, errorMessage: "", serverIp: serverData.ip + ":" + serverData.port, owner_password: serverData.owner.password});
 }
 
 function conectar(data) {
-  clientSockect = new WebSocket(data.roomIp);
-  clientSockect.on('message', data => clientOnMessage(clientSockect, data));
-  clientSockect.on('error', error => clientOnError(error));
-  clientSockect.on("open", () => enviar(data));
+  try {
+    clientSockect = new WebSocket(data.roomIp);
+    clientSockect.on('message', data => clientOnMessage(clientSockect, data));
+    clientSockect.on('error', error => clientOnError(error));
+    clientSockect.on("open", () => enviar(data));
+  }
+  catch (e) {
+      win.webContents.send("doBack", {funcao: "join", error: true, errorMessage: e.message, serverIp: "", owner_password: ""});
+  }
 }
 
 
 function readConfig(){
+  var data;
   try{
-    var data = fs.readFileSync(path.join(__dirname, "config.json"), "utf8");
+    data = fs.readFileSync(path.join(__dirname, "config.json"), "utf8");
     data = JSON.parse(data);
     return data;
   }
   catch(e){
     try{
-      var data = fs.readFileSync("./public/config.json", "utf8");
+      data = fs.readFileSync("./public/config.json", "utf8");
       data = JSON.parse(data);
       return data;
     }
     catch(e){
       throw new Error("Arquivo de configuração não encontrado");
     }
-  };
+  }
 }
 
 function writeConfig(data){
@@ -363,7 +456,7 @@ function writeConfig(data){
     }catch(e){
       throw new Error("Erro ao salvar arquivo de configuração");
     }
-  };
+  }
 }
 
 ipcMain.on("proBack", (event, args) => {
@@ -400,6 +493,12 @@ ipcMain.on("proBack", (event, args) => {
   }
   else if (args.data.funcao === "createServer"){
     createServer(args.data);
+  }
+  else if (args.data.funcao === "logout") {
+    enviar(args.data);
+  }
+  else if (args.data.funcao === "getUsers") {
+    enviar(args.data);
   }
 });
 

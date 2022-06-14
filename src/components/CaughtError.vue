@@ -25,7 +25,7 @@ export default {
         closeDialog() {
             this.dialog = false;
         },
-        showError(error) {
+        show(error) {
             if (error != null) {
                 this.Error = error.errorMessage;
                 this.dialog = true;

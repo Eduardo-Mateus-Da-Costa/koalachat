@@ -11,13 +11,34 @@
         label="Seu nome*"
         required
       ></v-text-field>
-      <v-checkbox
-        v-model="owner"
-        label="Sou o dono da sala"
-      ></v-checkbox>
+      <div class="d-flex">
+        <v-checkbox
+            style="margin-right: 10px;"
+            v-if="!newUser"
+            v-model="owner"
+            label="Sou o dono da sala"
+        ></v-checkbox>
+        <v-checkbox
+            v-if="!owner"
+            v-model="newUser"
+            label="Criar usuário"
+        ></v-checkbox>
+      </div>
+      <v-text-field
+        v-model="user_password"
+        label="Senha*"
+        required
+        v-if="!newUser && !owner"
+      ></v-text-field>
+      <v-text-field
+          v-if="newUser"
+          v-model="user_password"
+          label="Crie uma senha*"
+          required
+      ></v-text-field>
       <v-text-field
         v-if="owner"
-        v-model="owner_password"
+        v-model="user_password"
         label="Senha de administrador*"
         required
       ></v-text-field>
@@ -58,20 +79,20 @@ import Vue from 'vue'
 export default {
     name: 'JoinServer',
     data: () => ({
-      message: "Click",
       dialog: false,
       name: "",
       roomIp: null,
       roomName: "",
       roomPassword: "",
       owner: false,
-      owner_password: null,
+      user_password: "",
       form: false,
+      newUser: false,
     }),
 
     methods: {
       verifyForm() {
-        if (this.name == "" || this.roomIp == "" || this.roomName == "") {
+        if (this.name == "" || this.roomIp == "" || this.roomName == "" || this.user_password == "") {
           this.form = true
           return false
         }else{
@@ -106,7 +127,9 @@ export default {
           roomIp: this.roomIp,
           roomName: this.roomName,
           roomPassword: this.roomPassword,
-          owner_password: this.owner_password,
+          user_password: this.user_password,
+          is_owner: this.owner,
+          mode: this.newUser === true ? "create" : "join"
         };
         window.api.send("proBack", {data: data});
         this.$isLoading(true);
