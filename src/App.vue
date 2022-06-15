@@ -141,8 +141,9 @@ export default {
   position: fixed;
   top: 100%;
   width: 100%;
-  margin-top: -78px;
-  z-index: 2;
+  margin-top: -4%;
+  height: 7.5%;
+  z-index: 1;
 }
 
 #top {

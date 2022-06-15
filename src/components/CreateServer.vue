@@ -33,7 +33,7 @@
         v-model="roomPassword"
         label="Senha da sala"
       ></v-text-field>
-      <div v-if="form" style="color:red; margin-bottom: 3px;">Preencha os campos obrigatórios *</div>
+      <div v-if="form" style="color:red; margin-bottom: 3px;">{{message}}</div>
       <v-btn
         class="mr-4"
         @click="verifyForm() ? create() : null"
@@ -89,6 +89,7 @@ export default {
     showServerConfig: false,
     user_password: null,
     form: false,
+    message: null,
   }),
 
   methods: {
@@ -97,7 +98,12 @@ export default {
     },
 
     verifyForm() {
-      if (this.name == "" || this.roomName == "" || this.user_password == "") {
+      if (this.name === "" || this.roomName === "" || this.user_password === "") {
+        this.message = "Preencha todos os campos obrigatórios *";
+        this.form = true;
+        return false;
+      }else if (this.roomName.length > 15) {
+        this.message = "O nome da sala não pode ter mais de 15 caracteres";
         this.form = true;
         return false;
       }

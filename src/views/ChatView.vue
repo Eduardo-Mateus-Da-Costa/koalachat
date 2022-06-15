@@ -8,6 +8,7 @@
                 position: fixed;
                 z-index: 1;
                 top: 48px;
+                max-height: 87.5%;
             "
             >
             <v-btn
@@ -22,13 +23,14 @@
                   <h3>Participantes</h3>
                 </v-list-item-title>
                   <v-btn
-                      style="position: relative;"
+                      style="position: relative; justify-content: left;"
                       v-for="(user, index) in users"
                       :key="index"
-                      @contextmenu="!owner ? null : showOption(user)"
+                      @click="!owner ? null : showOption(user)"
                       >
                   {{user.name}}
                   <v-icon
+                      style="position: absolute; right: 0;"
                       :color="user.online === true ? 'green' : 'grey'">
                     mdi-checkbox-blank-circle
                   </v-icon>
@@ -130,13 +132,16 @@
                 min-width: 4%;
             ">
         </div>
+      <BanDialog ref="banDialog"></BanDialog>
     </div>
 </template>
 <script>
 import Vue from 'vue'
+import BanDialog  from "@/components/BanDialog";
 export default {
   name: 'ChatView',
   components: {
+    BanDialog,
   },
   data: () => ({
     Loading: true,
@@ -208,6 +213,20 @@ export default {
         window.api.send("proBack", {data: data})
       },
 
+      showOption(user) {
+        this.$refs.banDialog.open(user, this.banUser);
+      },
+      banUser(user) {
+        var data = {
+            url: this.roomIp,
+            roomName: this.room,
+            name: user.name,
+            funcao: "banUser",
+        }
+        window.api.send("proBack", {data: data})
+        this.options = false;
+        this.selectedUser = null;
+      },
 
         clearTimer() {
             this.Loading = false;
