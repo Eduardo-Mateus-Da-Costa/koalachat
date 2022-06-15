@@ -61,6 +61,7 @@ export default {
   },
   data: () => ({
     room_name: null,
+    generalError: false,
   }),
   methods: {
     fechar() {
@@ -74,8 +75,13 @@ export default {
         if (data.error === true){
           this.$isLoading(false);
           this.$refs.caughtErrorVue.show(data);
-          if(data.funcao === "getMessages" || data.funcao === "getUsers"){
+          if(data.funcao === "getMessages" || data.funcao === "getUsers" || data.funcao === "GeneralError"){
             this.$clearTimer();
+          }
+          if (data.funcao === "GeneralError"){
+            router.push({name: 'home'});
+            this.generalError = true;
+            this.setRoom_name({room_name: null});
           }
         }
         else{
@@ -120,8 +126,11 @@ export default {
 
   watch: {
     room_name() {
-      if (this.room_name == null) {
+      if (this.room_name == null && this.generalError == false) {
         window.location.reload(); ///Para tirar o nome da sala
+      }
+      else{
+        this.generalError = false;
       }
     }
   }

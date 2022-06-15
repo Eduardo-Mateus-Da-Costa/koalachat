@@ -102,6 +102,11 @@ export default {
           this.form = true
           return false
         }
+        else if (this.formatRoomIp() === false) {
+          this.message = "Endereço da sala inválido, use o formato ###.###.###.###:####"
+          this.form = true
+          return false
+        }
         else{
           this.form = false
           return true
@@ -118,7 +123,7 @@ export default {
 
       setConfig(data) {
         this.name = data.name;
-        this.roomIp = data.roomIp;
+        this.roomIp = data.roomIp.substring(5);
         this.roomName = data.roomName;
         this.roomPassword = data.roomPassword;
       },
@@ -127,11 +132,32 @@ export default {
         this.dialog = false;
       },
 
+      setWsformat(ip){
+        if (ip.startsWith("ws://")) {
+          return ip
+        }
+        else{
+          return "ws://" + ip
+        }
+      },
+
+      formatRoomIp() {
+        var ipRegex = /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/;
+        var portRegex = /^([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$/;
+        var ip = this.roomIp.split(":");
+        if (ip.length === 2) {
+          if (ip[0].match(ipRegex) && ip[1].match(portRegex)) {
+            return true;
+          }
+        }
+        return false;
+      },	
+
       join(){
         var data = {
           funcao: "join",
           name: this.name,
-          roomIp: this.roomIp,
+          roomIp: this.setWsformat(this.roomIp),
           roomName: this.roomName,
           roomPassword: this.roomPassword,
           user_password: this.user_password,
@@ -144,7 +170,7 @@ export default {
 
       isLoged(data){
         this.$isLoading(false);
-        this.$router.push({name: 'chat', params: {room: data.roomName, username: data.name, url: "ws://" + data.roomIp}});
+        this.$router.push({name: 'chat', params: {room: data.roomName, username: data.name, url: this.setWsformat(data.roomIp)}});
       },
     },
 

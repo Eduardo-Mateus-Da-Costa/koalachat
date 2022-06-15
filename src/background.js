@@ -144,6 +144,7 @@ function onError(ws, err) {
 function clientOnError(err) {
   var data = {
     error: true,
+    funcao: "GeneralError",
     errorMessage: err.message
   }
   win.webContents.send("doBack", data);
@@ -421,7 +422,11 @@ function onServerConnection(ws) {
 
 function enviar(data) {
   if (clientSockect.readyState === WebSocket.OPEN) {
-    clientSockect.send(JSON.stringify(data));
+    try{
+      clientSockect.send(JSON.stringify(data));
+    }catch(e){
+      win.webContents.send("doBack", {funcao: "GeneralError", error: true, errorMessage: "Erro de Conexão"});
+    }
   }
   else{
     conectar(data);
@@ -448,7 +453,8 @@ function conectar(data) {
     clientSockect.on("open", () => enviar(data));
   }
   catch (e) {
-      win.webContents.send("doBack", {funcao: "join", error: true, errorMessage: e.message, serverIp: "", owner_password: ""});
+    win.webContents.send("doBack", {funcao: "GeneralError", error: true, errorMessage: "Erro de conexão", serverIp: "", owner_password: ""});
+    console.log(e);
   }
 }
 
@@ -509,7 +515,7 @@ ipcMain.on("proBack", (event, args) => {
       }
       catch(e){
         response.error = true;
-        response.errorMessage = __dirname;
+        response.errorMessage = e.message;
       }
       win.webContents.send("doBack", response);
     }
@@ -524,7 +530,11 @@ ipcMain.on("proBack", (event, args) => {
     enviar(args.data);
   }
   else if (args.data.funcao === "createServer"){
-    createServer(args.data);
+    try{
+      createServer(args.data);
+    }catch(e){
+      win.webContents.send("doBack", {funcao: "createServer", error: true, errorMessage: e.message, serverIp: "", owner_password: ""});
+    }
   }
   else if (args.data.funcao === "logout") {
     enviar(args.data);
