@@ -454,7 +454,6 @@ function conectar(data) {
   }
   catch (e) {
     win.webContents.send("doBack", {funcao: "GeneralError", error: true, errorMessage: "Erro de conexão", serverIp: "", owner_password: ""});
-    console.log(e);
   }
 }
 
