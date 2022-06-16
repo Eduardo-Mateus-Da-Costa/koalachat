@@ -521,7 +521,11 @@ ipcMain.on("proBack", (event, args) => {
       win.webContents.send("doBack", response);
     }
   else if (args.data.funcao === "join"){
-    writeConfig(args.data);
+    try{
+      writeConfig(args.data);
+    }catch(e){
+      win.webContents.send("doBack", {funcao: "join", error: true, errorMessage: "Erro ao salvar configuração"});
+    }
     conectar(args.data);
   }
   else if (args.data.funcao === "sendMessage"){
