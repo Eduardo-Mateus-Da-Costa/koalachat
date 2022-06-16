@@ -72,6 +72,10 @@ export default {
       try{
        window.api.receive("doBack", (data) => {
          //console.log(data);
+         if(data.write === true)
+         {
+           console.log(data.errorMessage);
+         }
         if (data.error === true){
           this.$isLoading(false);
           this.$refs.caughtErrorVue.show(data);

@@ -8,7 +8,7 @@
                 position: fixed;
                 z-index: 1;
                 top: 48px;
-                max-height: 87.5%;
+                max-height: 89%;
             "
             >
             <v-btn

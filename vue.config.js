@@ -24,15 +24,18 @@ module.exports = {
             "AppImage",
             "deb"
           ],
-          icon: "./src/assets/koala.png",
+          icon: "./src/assets/koala_mac.png",
           asar: false,
+          desktop: {
+            icon: "./src/assets/koala_mac.png",
+          }
         },
         win: {
           target: [
             "nsis",
             "portable"
           ],
-          icon: "./src/assets/koala.png",
+          icon: "./src/assets/koala_mac.png",
           asar: false,
         },
         mac: {

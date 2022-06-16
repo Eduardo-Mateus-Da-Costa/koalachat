@@ -43,6 +43,7 @@ async function createWindow() {
     show: false,
     height: 1080,
     width: 1920,
+    icon: path.join(__dirname, '../public/koala_mac.png'),
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
@@ -490,9 +491,11 @@ function writeConfig(data){
     fs.writeFileSync(path.join(__dirname, "config.json"), JSON.stringify(config));
   }
   catch(e){
+    win.webContents.send("doBack", {funcao: "GeneralError", error: true, write:true, errorMessage: e.message});
     try{
       fs.writeFileSync("./public/config.json", JSON.stringify(config));
     }catch(e){
+      win.webContents.send("doBack", {funcao: "GeneralError", error: true, write:true, errorMessage: e.message});
       throw new Error("Erro ao salvar arquivo de configuração");
     }
   }
@@ -524,7 +527,7 @@ ipcMain.on("proBack", (event, args) => {
     try{
       writeConfig(args.data);
     }catch(e){
-      win.webContents.send("doBack", {funcao: "join", error: true, errorMessage: "Erro ao salvar configuração"});
+      win.webContents.send("doBack", {funcao: "join", error: true, errorMessage: e.message});
     }
     conectar(args.data);
   }
