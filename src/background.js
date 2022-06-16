@@ -453,9 +453,11 @@ function conectar(data) {
     clientSockect.on("open", () => enviar(data));
   }
   catch (e) {
-    win.webContents.send("doBack", {funcao: "GeneralError", error: true, errorMessage: "Erro de conexão", serverIp: "", owner_password: ""});
+    win.webContents.send("doBack",  {funcao: "GeneralError", error: true, errorMessage: "Erro de conexão", serverIp: "", owner_password: ""});
   }
 }
+
+
 
 
 function readConfig(){
