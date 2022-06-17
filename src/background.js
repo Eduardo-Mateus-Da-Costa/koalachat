@@ -488,12 +488,12 @@ function writeConfig(data){
     roomIp: data.roomIp,
   }
   try{
-    fs.writeFileSync(path.join(__dirname, "config.json"), JSON.stringify(config));
+    fs.writeFileSync(path.join(__dirname, "config.json"), JSON.stringify(config), "utf8");
   }
   catch(e){
     win.webContents.send("doBack", {funcao: "GeneralError", error: true, write:true, errorMessage: e.message});
     try{
-      fs.writeFileSync("./public/config.json", JSON.stringify(config));
+      fs.writeFileSync("./public/config.json", JSON.stringify(config), "utf8");
     }catch(e){
       win.webContents.send("doBack", {funcao: "GeneralError", error: true, write:true, errorMessage: e.message});
       throw new Error("Erro ao salvar arquivo de configuração");
