@@ -1,5 +1,7 @@
 'use strict'
 
+/* global __static */
+
 // Imports
 import { app, protocol, BrowserWindow, ipcMain } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
@@ -69,7 +71,7 @@ async function createWindow() {
     show: false,
     height: 1080,
     width: 1920,
-    icon: process.env.WEBPACK_DEV_SERVER_URL ? path.join(__dirname, './public/koala_mac.png') : path.join(__dirname, '/koala_mac.png'),
+    icon: path.join(__static, "koala.png"),
     webPreferences: {
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
       contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
