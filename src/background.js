@@ -583,7 +583,7 @@ ipcMain.on("proBack", (event, args) => {
 });
 
 
-// Fecha o electron
+// Fecha o electron e caso esteja online tenta sair da sala
 function fechar(data) {
   if (data.online === true){
     try{
