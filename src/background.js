@@ -1,18 +1,23 @@
 'use strict'
 
+// Imports
 import { app, protocol, BrowserWindow, ipcMain } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
-const isDevelopment = process.env.NODE_ENV !== 'production'
 import path from 'path'
 import ip from 'ip'
-var fs = require('fs');
+import helmet from 'helmet';
 
+const fs = require('fs');
 const express = require('express');
 const cors = require('cors');
-import helmet from 'helmet';
 const morgan = require('morgan');
+const WebSocket = require("ws");
+
+const isDevelopment = process.env.NODE_ENV !== 'production'
 const server = express();
+
+// Configuração do servidor
 server.use(cors({ origin: '*' }));
 server.use(helmet());
 server.use(express.json());
@@ -20,33 +25,52 @@ server.use(morgan('dev'));
 server.post('/login', (res) => {
     res.json({ token: '123456' });
 });
-const wsServer = server.listen(3000, () => {
-})
+const wsServer = tryOpen();
+var globalPort = 3000;
 
-const WebSocket = require("ws");
+function tryOpen() {
+    var retry = true;
+    while (retry) {
+        try {
+            var tryServer = server.listen(globalPort, () => {})
+            retry = false;
+            return tryServer;
+        } catch (e) {
+            globalPort++;
+        }
+    }
+}
+
 const wss = new WebSocket.Server({server:wsServer});
 wss.on('connection', onServerConnection);
+
 
 var clientSockect;
 
 
-// Scheme must be registered before the app is ready
+// Schema de arquivos do vuejs
 protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true, stream: true } },
 ])
 
+
+// Decodificador
+function decode(data) {
+  var json = JSON.parse(new TextDecoder("utf-8").decode(data));
+  return json;
+}
+
+
+// Inicialização da janela do electron
 var win;
 
 async function createWindow() {
-  // Create the browser window.
     win = new BrowserWindow({
     show: false,
     height: 1080,
     width: 1920,
-    icon: path.join(__dirname, '../public/koala_mac.png'),
+    icon: process.env.WEBPACK_DEV_SERVER_URL ? path.join(__dirname, './public/koala_mac.png') : path.join(__dirname, '/koala_mac.png'),
     webPreferences: {
-      // Use pluginOptions.nodeIntegration, leave this alone
-      // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
       contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
       preload: path.join(__dirname, "/preload.js")
@@ -54,18 +78,15 @@ async function createWindow() {
   })
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
-    // Load the url of the dev server if in development mode
     try{
       await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL);
     }
     catch(e){
-      console.log(e + "Erro no load url");
+      console.log(e + "Erro no load da url");
     }
-   
-    //if (!process.env.IS_TEST) win.webContents.openDevTools()
+
   } else {
     createProtocol('app')
-    // Load the index.html when not in development
     win.loadURL('app://./index.html')
   }
   //win.setMenu(null);
@@ -73,27 +94,19 @@ async function createWindow() {
   win.show();
 }
 
-// Quit when all windows are closed.
 app.on('window-all-closed', () => {
-  // On macOS it is common for applications and their menu bar
-  // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform !== 'darwin') {
     app.quit()
   }
 })
 
 app.on('activate', () => {
-  // On macOS it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
   if (BrowserWindow.getAllWindows().length === 0) createWindow()
 })
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
+
 app.on('ready', async () => {
   if (isDevelopment && !process.env.IS_TEST) {
-    // Install Vue Devtools
     try {
       await installExtension(VUEJS_DEVTOOLS)
     } catch (e) {
@@ -103,7 +116,6 @@ app.on('ready', async () => {
   createWindow()
 })
 
-// Exit cleanly on request from parent process in development mode.
 if (isDevelopment) {
   if (process.platform === 'win32') {
     process.on('message', (data) => {
@@ -119,11 +131,11 @@ if (isDevelopment) {
 }
 
 
-
+// Dados do servidor
 var serverData = {
   owner: null,
   name: null,
-  port: "3000",
+  port: globalPort,
   ip: null,
   password: null,
   maxusers: null,
@@ -132,7 +144,7 @@ var serverData = {
   messages: [],
 };
 
-
+// OnError Do Servidor
 function onError(ws, err) {
   console.error(`onError: ${err.message}`);
   var data ={
@@ -142,6 +154,7 @@ function onError(ws, err) {
   ws.send(JSON.stringify(data));
 }
 
+// OnError Do Cliente
 function clientOnError(err) {
   var data = {
     error: true,
@@ -152,17 +165,55 @@ function clientOnError(err) {
   console.log(err);
 }
 
-function decode(data) {
-  var json = JSON.parse(new TextDecoder("utf-8").decode(data));
-  return json;
-}
+// OnMessage Do Cliente
 function clientOnMessage(ws, data) {
   win.webContents.send("doBack", decode(data));
 }
 
+// Conexão do servidor
+function onServerConnection(ws) {
+  ws.on('message', data => serverOnMessage(ws, data));
+  ws.on('error', error => onError(ws, error));
+}
 
+// OnMessage Do Servidor (Router)
+function serverOnMessage(ws, data) {
+  var response;
+  if (serverData.status !== false){
+    data = decode(data);
+    if (data.funcao === "join") {
+      response = confirmJoin(data);
+    }
+    if (data.funcao === "sendMessage") {
+      response = confirmSendMessage(data);
+    }
+    if (data.funcao === "getMessages") {
+      response = getMessages(data);
+    }
+    if (data.funcao === "logout"){
+      response = confirmLogout(data);
+    }
+    if (data.funcao === "getUsers"){
+      response = getUsers(data);
+    }
+    if (data.funcao === "banUser") {
+      response = banUser(data);
+    }
+    ws.send(JSON.stringify(response));
+  }
+  else{
+    response = {
+      error: true,
+      errorMessage: "Servidor offline"
+    }
+    ws.send(JSON.stringify(response));
+  }
+}
+
+
+// Busca de usuários
 function findUser(userData) {
-  var user = null;
+  var user;
   try{
     user = serverData.users.find(user => user.name === userData.name);
   }catch(e){
@@ -172,6 +223,7 @@ function findUser(userData) {
 }
 
 
+// Confirmação de entrada na sala
 function confirmJoin(data) {
   var response = {
     funcao: "confirmJoin",
@@ -240,6 +292,8 @@ function confirmJoin(data) {
   return response;
 }
 
+
+// Confirmação de envio de mensagem
 function confirmSendMessage(data){
   var response = {
     funcao: "confirmSendMessage",
@@ -266,6 +320,7 @@ function confirmSendMessage(data){
 }
 
 
+// Busca de mensagens
 function getMessages(data){
   var response = {
     funcao: "getMessages",
@@ -295,6 +350,7 @@ function getMessages(data){
 }
 
 
+// Confirmação de saída da sala
 function confirmLogout(data){
     var response = {
       funcao: "confirmLogout",
@@ -324,6 +380,7 @@ function confirmLogout(data){
 }
 
 
+// Busca de usuários da sala
 function getUsers(data){
     var response = {
       funcao: "getUsers",
@@ -351,6 +408,8 @@ function getUsers(data){
     return response;
 }
 
+
+// Remove usuário da sala
 function banUser(data){
     var response = {
       funcao: "banUser",
@@ -380,53 +439,13 @@ function banUser(data){
     return response;
 }
 
-
-
-function serverOnMessage(ws, data) {
-  var response;
-  if (serverData.status !== false){
-    data = decode(data);
-    if (data.funcao === "join") {
-      response = confirmJoin(data);
-    }
-    if (data.funcao === "sendMessage") {
-      response = confirmSendMessage(data);
-    }
-    if (data.funcao === "getMessages") {
-      response = getMessages(data);
-    }
-    if (data.funcao === "logout"){
-        response = confirmLogout(data);
-    }
-    if (data.funcao === "getUsers"){
-        response = getUsers(data);
-    }
-    if (data.funcao === "banUser") {
-        response = banUser(data);
-    }
-    ws.send(JSON.stringify(response));
-  }
-  else{
-    response = {
-      error: true,
-      errorMessage: "Servidor offline"
-    }
-    ws.send(JSON.stringify(response));
-  }
-}
-
-function onServerConnection(ws) {
-  ws.on('message', data => serverOnMessage(ws, data));
-  ws.on('error', error => onError(ws, error));
-}
-
-
+// Envio de informações do cliente para o servidor
 function enviar(data) {
   if (clientSockect.readyState === WebSocket.OPEN) {
     try{
       clientSockect.send(JSON.stringify(data));
     }catch(e){
-      win.webContents.send("doBack", {funcao: "GeneralError", error: true, errorMessage: "Erro de Conexão"});
+      conectar(data);
     }
   }
   else{
@@ -434,6 +453,8 @@ function enviar(data) {
   }
 }
 
+
+// Cria o servidor
 function createServer(data) {
   serverData.ip = ip.address("public", "ipv4");
   serverData.name = data.roomName;
@@ -446,6 +467,8 @@ function createServer(data) {
   win.webContents.send("doBack", {funcao: "serverConfig", error: false, errorMessage: "", serverIp: serverData.ip + ":" + serverData.port, owner_password: serverData.owner.password});
 }
 
+
+// Cria o socket do cliente e tenta conectar no servidor
 function conectar(data) {
   try {
     clientSockect = new WebSocket(data.roomIp);
@@ -460,7 +483,7 @@ function conectar(data) {
 
 
 
-
+// Tenta ler as configurações da última sala conectada, (linux requer permissão de leitura)
 function readConfig(){
   var data;
   try{
@@ -480,6 +503,8 @@ function readConfig(){
   }
 }
 
+
+// Salva as configurações da última sala conectada (linux requer permissão de escrita)
 function writeConfig(data){
   var config = {
     roomName: data.roomName,
@@ -501,10 +526,12 @@ function writeConfig(data){
   }
 }
 
+
+// Router de conexão entre o frontend e o backend
 ipcMain.on("proBack", (event, args) => {
   if (args.data.funcao === "fechar")
     {
-      fechar();
+      fechar(args.data);
     }
   else if (args.data.funcao === "config")
     {
@@ -527,7 +554,7 @@ ipcMain.on("proBack", (event, args) => {
     try{
       writeConfig(args.data);
     }catch(e){
-      win.webContents.send("doBack", {funcao: "join", error: true, errorMessage: e.message});
+      win.webContents.send("doBack", {funcao: "writeConfig", error: true, errorMessage: e.message});
     }
     conectar(args.data);
   }
@@ -555,7 +582,17 @@ ipcMain.on("proBack", (event, args) => {
   }
 });
 
-function fechar() {
+
+// Fecha o electron
+function fechar(data) {
+  if (data.online === true){
+    try{
+      enviar(data.exit);
+      clientSockect.close();
+    }catch (e) {
+      console.log(e);
+    }
+  }
   if (process.platform !== 'darwin') {
     app.quit();
   }

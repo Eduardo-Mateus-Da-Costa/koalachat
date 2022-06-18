@@ -30,7 +30,7 @@ export default {
   name: "BanDialog",
 
   data: () => ({
-    selectedUser: null,
+    selectedUser: {name: 'vazio'},
     options: false,
     funcao: null,
   }),

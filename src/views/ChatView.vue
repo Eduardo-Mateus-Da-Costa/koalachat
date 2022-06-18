@@ -1,45 +1,51 @@
 <template>
     <div class="d-flex" style="background-color:ghostwhite; height: 100%" >
-        <v-navigation-drawer
-            class="green lighten-1 elevation-0"
-            expand-on-hover
-            style="
+        <div class="green lighten-1"
+             style="
+                max-width: 4%;
                 min-width: 4%;
-                position: fixed;
-                z-index: 1;
-                top: 48px;
-                max-height: 89%;
-            "
-            >
-            <v-btn
-                icon
-                rounded
-                style="left: 15%; top: 10px; margin-bottom: 10px;"
-                :to="{name: 'home'}"
-                ><v-icon color="white">mdi-arrow-left</v-icon></v-btn>
-            <v-list-item>
-              <v-list-item-content>
-                <v-list-item-title>
-                  <h3>Participantes</h3>
-                </v-list-item-title>
-                  <v-btn
-                      style="position: relative; justify-content: left;"
-                      v-for="(user, index) in users"
-                      :key="index"
-                      @click="!owner ? null : showOption(user)"
-                      >
-                  {{user.name}}
-                  <v-icon
-                      style="position: absolute; right: 0;"
-                      :color="user.online === true ? 'green' : 'grey'">
-                    mdi-checkbox-blank-circle
-                  </v-icon>
-                </v-btn>
-              </v-list-item-content>
-            </v-list-item>
-        </v-navigation-drawer>
+            ">
+          <v-navigation-drawer
+              class="green lighten-1 elevation-0"
+              expand-on-hover
+              style="
+                  min-width: 4%;
+                  position: fixed;
+                  z-index: 1;
+                  top: 48px;
+                  max-height: 89%;
+              "
+              >
+              <v-btn
+                  icon
+                  rounded
+                  style="left: 15%; top: 10px; margin-bottom: 10px;"
+                  :to="{name: 'home'}"
+                  ><v-icon color="white">mdi-arrow-left</v-icon></v-btn>
+              <v-list-item>
+                <v-list-item-content>
+                  <v-list-item-title>
+                    <h3>Participantes</h3>
+                  </v-list-item-title>
+                    <v-btn
+                        style="position: relative; justify-content: left;"
+                        v-for="(user, index) in users"
+                        :key="index"
+                        @click="!owner ? null : showOption(user)"
+                        >
+                    {{user.name}}
+                    <v-icon
+                        style="position: absolute; right: 0;"
+                        :color="user.online === true ? 'green' : 'grey'">
+                      mdi-checkbox-blank-circle
+                    </v-icon>
+                  </v-btn>
+                </v-list-item-content>
+              </v-list-item>
+          </v-navigation-drawer>
+        </div>
         <div 
-            style="min-width: 9%">
+            style="min-width: 5%">
         </div>
         <div style="width: 82%; margin-top: 30px; margin-bottom: 230px;" id="chat" ref="chat">
             <div >
@@ -168,7 +174,7 @@ export default {
             },
             funcao: "sendMessage"
         }
-        window.api.send("proBack", {funcao: "sendMessage", data: data})
+        window.api.send("proBack", {data: data})
         this.message = null;
       },
 

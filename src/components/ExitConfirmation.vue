@@ -54,7 +54,17 @@ export default {
       },
 
       close() {
-        window.api.send("proBack", {data: {funcao: "fechar"}});
+        var data = {
+          funcao: "fechar",
+          online: this.$route.fullPath !== "/",
+          exit: this.$route.fullPath === "/" ? null : {
+            url: this.$route.params.url,
+            roomName: this.$route.params.room,
+            name: this.$route.params.username,
+            funcao: "logout"
+          }
+        };
+        window.api.send("proBack", {data: data});
       },
     }
 };

@@ -32,6 +32,7 @@
           <v-card
             width="100%"
             class="green lighten-1 text-center"
+            height="100%"
           >
             <v-divider></v-divider>
 
@@ -71,14 +72,11 @@ export default {
     getData(){
       try{
        window.api.receive("doBack", (data) => {
-         //console.log(data);
-         if(data.write === true)
-         {
-           console.log(data.errorMessage);
-         }
         if (data.error === true){
           this.$isLoading(false);
-          this.$refs.caughtErrorVue.show(data);
+          if (data.funcao !== "logout"){
+            this.$refs.caughtErrorVue.show(data);
+          }
           if(data.funcao === "getMessages" || data.funcao === "getUsers" || data.funcao === "GeneralError"){
             this.$clearTimer();
           }
@@ -130,7 +128,7 @@ export default {
 
   watch: {
     room_name() {
-      if (this.room_name == null && this.generalError == false) {
+      if (this.room_name == null && this.generalError === false) {
         window.location.reload(); ///Para tirar o nome da sala
       }
       else{
@@ -154,8 +152,8 @@ export default {
   position: fixed;
   top: 100%;
   width: 100%;
-  margin-top: -4%;
-  height: 7.5%;
+  margin-top: -70px;
+  height: 70px;
   z-index: 1;
 }
 

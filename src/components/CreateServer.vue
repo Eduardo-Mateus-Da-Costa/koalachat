@@ -53,6 +53,9 @@
     <v-card-title>
       <span class="text-h5" style="font-weight: bold">Configurações do servidor</span>
     </v-card-title>
+    <v-card-title>
+      <span class="text-h6" style="font-weight: bold; color: red">Por favor anote!</span>
+    </v-card-title>
     <v-card-text style="font-size: 20px;">
       <span style="color:green; font-weight: bold;">Nome:</span> <span>{{roomName}}</span>
     </v-card-text>
