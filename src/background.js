@@ -28,14 +28,16 @@ server.post('/login', (res) => {
     res.json({ token: '123456' });
 });
 const wsServer = tryOpen();
-var globalPort = 3000;
+var globalPort;
 
 function tryOpen() {
+    globalPort = 3000;
     var retry = true;
     while (retry) {
         try {
             var tryServer = server.listen(globalPort, () => {})
             retry = false;
+            console.log("Servidor iniciado na porta " + globalPort);
             return tryServer;
         } catch (e) {
             globalPort++;
@@ -137,7 +139,7 @@ if (isDevelopment) {
 var serverData = {
   owner: null,
   name: null,
-  port: globalPort,
+  port: null,
   ip: null,
   password: null,
   maxusers: null,
@@ -460,6 +462,7 @@ function enviar(data) {
 function createServer(data) {
   serverData.ip = ip.address("public", "ipv4");
   serverData.name = data.roomName;
+  serverData.port = globalPort;
   serverData.password = data.password;
   serverData.maxusers = data.maxUsers;
   serverData.owner = {name: data.name, password: data.user_password, online: false};
