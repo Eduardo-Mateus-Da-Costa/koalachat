@@ -73,6 +73,7 @@ async function createWindow() {
     show: false,
     height: 1080,
     width: 1920,
+    frame: false,
     icon: path.join(__static, "koala.png"),
     webPreferences: {
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
@@ -93,7 +94,7 @@ async function createWindow() {
     createProtocol('app')
     win.loadURL('app://./index.html')
   }
-  //win.setMenu(null);
+  win.setMenu(null);
   win.maximize();
   win.show();
 }
