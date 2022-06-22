@@ -27,6 +27,7 @@ server.use(morgan('dev'));
 server.post('/login', (res) => {
     res.json({ token: '123456' });
 });
+
 const wsServer = tryOpen();
 var globalPort;
 
